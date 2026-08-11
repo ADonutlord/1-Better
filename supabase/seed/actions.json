@@ -1,0 +1,2622 @@
+[
+  {
+    "title": "Take Five Slow Breaths",
+    "description": "Take five slow breaths and focus only on your breathing.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Breathe in a Box",
+    "description": "Breathe in for 4, hold for 4, out for 4, rest for 4. Repeat four times.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Try the 4-7-8 Breath",
+    "description": "Breathe in for 4 seconds, hold for 7, exhale slowly for 8. Repeat four times.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Breathe with Your Belly",
+    "description": "Place a hand on your belly and breathe so your hand rises and falls slowly.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Exhale Twice as Long",
+    "description": "For two minutes, make each exhale twice as long as your inhale.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "okay"
+    ],
+    "situation_tags": [
+      "stress",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Listen to Your Breath",
+    "description": "Close your eyes and listen to the sound of your own breathing for one minute.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Hum to Soothe",
+    "description": "Exhale while humming softly. Feel the vibration calm your chest.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Count Ten Slow Breaths",
+    "description": "Count ten breaths, slow and even, without rushing any of them.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Name Five Things You See",
+    "description": "Look around and name five things you can see right now.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Feel Three Things",
+    "description": "Notice three physical sensations: the chair, the floor, the air on your skin.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Use the 5-4-3-2-1 Senses",
+    "description": "Name 5 things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Plant Your Feet",
+    "description": "Stand or sit, press both feet into the ground, and notice the pressure for a minute.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Touch Something Textured",
+    "description": "Find a textured object and run your fingers over it slowly, paying full attention.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Take a Cold Sip",
+    "description": "Drink a glass of cold water slowly, noticing the temperature.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "okay"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Say the Date Out Loud",
+    "description": "Say today's date, the day, and one true fact about this moment out loud.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Name Three Sounds Around You",
+    "description": "Stop and name three sounds you can hear right now.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Scan Your Body Quickly",
+    "description": "From head to toe, notice where you hold tension for 20 seconds each spot.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Tense and Release Your Shoulders",
+    "description": "Shrug your shoulders up for 5 seconds, then drop and release. Repeat three times.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Soften Your Jaw",
+    "description": "Unclench your jaw, lower your tongue, and let your face relax.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Progressive Muscle Relax",
+    "description": "Tense each muscle group for 5 seconds, then release, moving down your body.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Rest Your Eyes",
+    "description": "Close your eyes and let them rest for two full minutes.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do Nothing for Three Minutes",
+    "description": "Set a timer for three minutes and simply sit without a task.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Loosen Your Hands",
+    "description": "Shake out both hands loosely for thirty seconds and notice how it feels.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write One Thing That Went Well",
+    "description": "Write down one small thing that went well today.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Say Thanks for Three Small Things",
+    "description": "Mentally thank three small things: hot water, daylight, a good chair.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Text a Simple Thank You",
+    "description": "Send a short thank-you message to someone who helped you recently.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Recall a Kind Memory",
+    "description": "Remember one kind moment from the past week and replay it in detail.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "List What You Have Today",
+    "description": "List three things you have right now that you sometimes take for granted.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "money"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Thank Someone Out Loud",
+    "description": "Tell someone face to face one specific thing you appreciate about them.",
+    "category": "wellbeing",
+    "sub_category": "gratitude",
+    "estimated_minutes": 3,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Soothe Yourself with Kind Words",
+    "description": "Say to yourself: 'This is hard, and I'm doing my best.'",
+    "category": "wellbeing",
+    "sub_category": "self-soothing",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Wrap Yourself in a Blanket",
+    "description": "Wrap a blanket around yourself for a few minutes and breathe slowly.",
+    "category": "wellbeing",
+    "sub_category": "self-soothing",
+    "estimated_minutes": 5,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Make a Warm Drink",
+    "description": "Make a warm drink and hold the cup with both hands, sipping slowly.",
+    "category": "wellbeing",
+    "sub_category": "self-soothing",
+    "estimated_minutes": 6,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Play Something Gentle",
+    "description": "Play one gentle song you like and give it your full attention.",
+    "category": "wellbeing",
+    "sub_category": "self-soothing",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Stretch Your Neck Gently",
+    "description": "Slowly tilt your head side to side, staying soft and easy.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Pick One Task for Today",
+    "description": "Choose exactly one task that matters and write it down.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write a Five-Item To-Do List",
+    "description": "Write down five tasks, then circle the single most important one.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Plan Your Top Three",
+    "description": "Write the three most important things to do today, in order.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Set One Time Block",
+    "description": "Reserve one 25-minute block for your most important task.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Tomorrow's Plan Tonight",
+    "description": "Tonight, write the first task you'll start with tomorrow.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Decide the Next Step Only",
+    "description": "For your biggest task, write down only the very next physical step.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Break a Task into Three Pieces",
+    "description": "Take one task you're avoiding and split it into three small pieces.",
+    "category": "productivity",
+    "sub_category": "task breakdown",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "work",
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Start With Two Minutes",
+    "description": "Spend just two minutes starting the task you're avoiding.",
+    "category": "productivity",
+    "sub_category": "task breakdown",
+    "estimated_minutes": 2,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do One Micro-Task",
+    "description": "Complete the smallest useful piece of your big project.",
+    "category": "productivity",
+    "sub_category": "task breakdown",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Estimate How Long It Really Takes",
+    "description": "Guess how long your task takes, then check how close you were.",
+    "category": "productivity",
+    "sub_category": "task breakdown",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Clear Your Desk of One Thing",
+    "description": "Put away one thing that is cluttering your workspace.",
+    "category": "productivity",
+    "sub_category": "organization",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Close Ten Extra Tabs",
+    "description": "Close the ten browser tabs you no longer need.",
+    "category": "productivity",
+    "sub_category": "organization",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Sort Your Inbox Once",
+    "description": "Open your inbox and decide the fate of ten messages: reply, file, or delete.",
+    "category": "productivity",
+    "sub_category": "organization",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Silence Non-Essential Notifications",
+    "description": "Turn off notifications for apps you don't need for the next hour.",
+    "category": "productivity",
+    "sub_category": "organization",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Make Your Bed",
+    "description": "Make your bed before anything else today.",
+    "category": "productivity",
+    "sub_category": "organization",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Your Today Theme",
+    "description": "Give today a one-word theme, like 'calm' or 'steady'.",
+    "category": "productivity",
+    "sub_category": "planning",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Focus for Ten Minutes",
+    "description": "Focus on one thing for ten uninterrupted minutes.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 10,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Use the One-Tab Rule",
+    "description": "Work on one tab, one window, one task for 20 minutes.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 20,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Turn Off Your Phone",
+    "description": "Switch your phone to airplane mode for 30 minutes and do one thing.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 30,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Try the Pomodoro First Round",
+    "description": "Set a 25-minute timer, work on one task, then take a 5-minute break.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 30,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Move Your Phone to Another Room",
+    "description": "Leave your phone in another room for the next 30 minutes.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 30,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write One Paragraph",
+    "description": "Write one paragraph toward the thing you keep postponing.",
+    "category": "productivity",
+    "sub_category": "focus",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "work",
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Review Your Notes for Five Minutes",
+    "description": "Read through today's or yesterday's notes for five minutes.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Summarise One Page in One Sentence",
+    "description": "Summarise one page of notes into a single sentence.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Quiz Yourself on Three Facts",
+    "description": "Cover your notes and recall three key facts from memory.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Teach One Idea Aloud",
+    "description": "Explain one concept out loud as if teaching a friend.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 6,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Re-read One Section Slowly",
+    "description": "Re-read one section of your material and highlight three key points.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 8,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Three Revision Questions",
+    "description": "Write three questions your teacher might ask on the exam.",
+    "category": "study",
+    "sub_category": "revision",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Make a One-Week Revision Plan",
+    "description": "Sketch which subjects you'll revise on each of the next seven days.",
+    "category": "study",
+    "sub_category": "exam planning",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school",
+      "stress"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "List What the Exam Covers",
+    "description": "Write down every topic the exam covers, then mark your weakest two.",
+    "category": "study",
+    "sub_category": "exam planning",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school",
+      "stress"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Pick Your Weakest Topic",
+    "description": "Choose your single weakest topic and open its notes.",
+    "category": "study",
+    "sub_category": "exam planning",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "school",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Start With the Easy Marks",
+    "description": "Identify which exam sections earn marks for basic recall and plan to secure them first.",
+    "category": "study",
+    "sub_category": "exam planning",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Plan Your Exam Morning",
+    "description": "Write down what you'll do the morning of the exam, step by step.",
+    "category": "study",
+    "sub_category": "exam planning",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "school",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Use Flashcards for Three Terms",
+    "description": "Make flashcards for three terms you keep forgetting.",
+    "category": "study",
+    "sub_category": "memory",
+    "estimated_minutes": 8,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Remember a List With a Story",
+    "description": "Turn a list you need to memorise into a short, silly story.",
+    "category": "study",
+    "sub_category": "memory",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Test Yourself, Then Check",
+    "description": "Recall five things from memory, then check your notes for accuracy.",
+    "category": "study",
+    "sub_category": "memory",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Space Your Revision",
+    "description": "Revise one topic today, and schedule the same topic again in two days.",
+    "category": "study",
+    "sub_category": "memory",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Draw a Simple Diagram",
+    "description": "Turn one concept into a simple diagram from memory.",
+    "category": "study",
+    "sub_category": "memory",
+    "estimated_minutes": 7,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Rewrite Notes in Your Own Words",
+    "description": "Rewrite one page of notes using your own words only.",
+    "category": "study",
+    "sub_category": "note-taking",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Add One Question to Your Notes",
+    "description": "Write one question in the margin of your notes that you can't answer yet.",
+    "category": "study",
+    "sub_category": "note-taking",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Use the Cornell Layout",
+    "description": "Split a page into notes and keywords, and fill one section.",
+    "category": "study",
+    "sub_category": "note-taking",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Highlight Only Three Lines",
+    "description": "Take a dense page and highlight only the three most important lines.",
+    "category": "study",
+    "sub_category": "note-taking",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write One Question Per Section",
+    "description": "For each section of your notes, write one question the section answers.",
+    "category": "study",
+    "sub_category": "note-taking",
+    "estimated_minutes": 8,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "school"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Message One Friend",
+    "description": "Send one short message to a friend just to say hi.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "lonely",
+      "okay"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "friends"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Reply to a Stale Message",
+    "description": "Reply to one message you've been meaning to answer.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Ask Someone How They Are",
+    "description": "Text someone and ask how they're actually doing.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Send One Voice Note",
+    "description": "Send a quick voice note to a friend instead of a text.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "friends",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Call Someone for Ten Minutes",
+    "description": "Call a friend or family member and talk for ten minutes.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 10,
+    "difficulty": 4,
+    "required_energy": "high",
+    "mood_tags": [
+      "lonely",
+      "okay"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "family",
+      "friends"
+    ],
+    "base_xp": 20
+  },
+  {
+    "title": "Ask a Friend for Help",
+    "description": "Ask one person for help with something specific today.",
+    "category": "social",
+    "sub_category": "ask-help",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "friends",
+      "work",
+      "school",
+      "stress"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Tell Someone What You Need",
+    "description": "Tell one person, clearly, what you need right now.",
+    "category": "social",
+    "sub_category": "ask-help",
+    "estimated_minutes": 5,
+    "difficulty": 4,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "family",
+      "friends",
+      "stress"
+    ],
+    "base_xp": 20
+  },
+  {
+    "title": "Share How You're Feeling",
+    "description": "Tell one trusted person honestly how you're feeling today.",
+    "category": "social",
+    "sub_category": "ask-help",
+    "estimated_minutes": 5,
+    "difficulty": 4,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "friends",
+      "family",
+      "loneliness"
+    ],
+    "base_xp": 20
+  },
+  {
+    "title": "Ask for a Second Opinion",
+    "description": "Run a small decision by someone you trust.",
+    "category": "social",
+    "sub_category": "ask-help",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "friends"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Thank a Friend Specifically",
+    "description": "Tell a friend one specific thing they did that helped you.",
+    "category": "social",
+    "sub_category": "thank",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Leave a Compliment",
+    "description": "Give one sincere compliment to someone today.",
+    "category": "social",
+    "sub_category": "thank",
+    "estimated_minutes": 2,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Send a Message of Encouragement",
+    "description": "Send one encouraging message to someone who is struggling.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Celebrate Someone's Win",
+    "description": "Congratulate someone on a recent win, big or small.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Make a Small Offer of Help",
+    "description": "Offer help to someone for one small thing today.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Invite Someone to Do Something Small",
+    "description": "Invite a friend to a walk, a coffee, or a short call.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "friends",
+      "loneliness"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Check on Someone Quiet",
+    "description": "Message someone you haven't heard from in a while, no agenda.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Introduce Two People",
+    "description": "Introduce two people who could help each other.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "friends"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Say Good Morning to a Neighbour",
+    "description": "Greet someone in your building or street warmly.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 2,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Reconnect With an Old Friend",
+    "description": "Send one message to an old friend you've lost touch with.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 4,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay",
+      "lonely"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "friends"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Listen Fully to Someone",
+    "description": "Give someone your full attention for ten minutes without interrupting.",
+    "category": "social",
+    "sub_category": "encourage",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "friends",
+      "family"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Stretch Your Back Slowly",
+    "description": "Stand up and stretch your back gently for two minutes.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "stressed"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Touch Your Toes Five Times",
+    "description": "Reach for your toes, hold five seconds, and come up slowly. Repeat five times.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Roll Your Shoulders",
+    "description": "Roll your shoulders backward ten times, then forward ten times.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do a Doorway Stretch",
+    "description": "Place your hands on a doorframe and lean through to open your chest.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Stretch Your Neck Slowly",
+    "description": "Gently move your head side to side and chin to chest for a minute.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do a Full-Body Unwind",
+    "description": "Stretch your neck, shoulders, back, legs, and wrists for five minutes.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Walk for Ten Minutes",
+    "description": "Take a short ten-minute walk outside.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 10,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "stress",
+      "loneliness"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Walk and Notice the Weather",
+    "description": "Take a five-minute walk and notice the temperature and light.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 5,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Take the Stairs",
+    "description": "Use the stairs instead of the lift once today.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Walk to a New Spot",
+    "description": "Walk somewhere you've never walked before, even just around the block.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 15,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "stress"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Walk One Errand on Foot",
+    "description": "Do one nearby errand on foot instead of by car or bus.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 15,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "March in Place for a Minute",
+    "description": "March in place, lifting knees, for one minute to get your blood moving.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do Ten Squats",
+    "description": "Do ten slow, controlled squats at your own pace.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 3,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other",
+      "work"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Dance to One Song",
+    "description": "Dance freely to one full song, alone if that feels right.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do Five Push-Ups",
+    "description": "Do five push-ups, on your knees if needed.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 3,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Move Your Body for Two Minutes",
+    "description": "Jump, stretch, wiggle, or walk for two continuous minutes.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 2,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Lift Something Light Ten Times",
+    "description": "Pick a light weight (or a bottle of water) and lift it ten times each side.",
+    "category": "physical",
+    "sub_category": "movement",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "work",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Drink a Full Glass of Water",
+    "description": "Drink a full glass of water slowly, right now.",
+    "category": "physical",
+    "sub_category": "water",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Refill Your Water Bottle",
+    "description": "Fill your water bottle and set it where you'll see it.",
+    "category": "physical",
+    "sub_category": "water",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Drink Water Before Each Meal",
+    "description": "Drink a glass of water before each meal today.",
+    "category": "physical",
+    "sub_category": "water",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Swap One Drink for Water",
+    "description": "Swap your next sugary or caffeinated drink for water.",
+    "category": "physical",
+    "sub_category": "water",
+    "estimated_minutes": 1,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "good"
+    ],
+    "situation_tags": [
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Close Your Eyes for Five Minutes",
+    "description": "Lie down, close your eyes, and rest fully for five minutes.",
+    "category": "physical",
+    "sub_category": "rest",
+    "estimated_minutes": 5,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Rest Your Eyes From Screens",
+    "description": "Look away from every screen for three minutes.",
+    "category": "physical",
+    "sub_category": "rest",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "okay"
+    ],
+    "situation_tags": [
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Take a Ten-Minute Power Nap",
+    "description": "Nap for no more than ten minutes, then get up and move.",
+    "category": "physical",
+    "sub_category": "rest",
+    "estimated_minutes": 10,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low"
+    ],
+    "situation_tags": [
+      "work",
+      "school",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Go to Bed a Little Earlier",
+    "description": "Go to bed twenty minutes earlier than usual tonight.",
+    "category": "physical",
+    "sub_category": "rest",
+    "estimated_minutes": 20,
+    "difficulty": 3,
+    "required_energy": "low",
+    "mood_tags": [
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Do Nothing Active for One Hour",
+    "description": "Give yourself one screen-free hour of true rest this evening.",
+    "category": "physical",
+    "sub_category": "rest",
+    "estimated_minutes": 60,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Three Lines About Today",
+    "description": "Write three honest lines about how today has been.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write a Free Page",
+    "description": "Write freely for five minutes without stopping or judging.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write One Worry and One Hope",
+    "description": "Write down one worry and one hope for this week.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write a Letter You Won't Send",
+    "description": "Write a letter to someone about how you feel. You don't have to send it.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 10,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "family",
+      "friends",
+      "relationships"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Write About a Happy Moment",
+    "description": "Describe one happy moment from this week in as much detail as you can.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 8,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Keep a One-Question Journal",
+    "description": "Answer: 'What would make today a little better?'",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Name Your Feeling Precisely",
+    "description": "Write the exact word for what you feel right now, beyond 'fine'.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Rate Your Feelings",
+    "description": "Rate how you feel from 1 to 10, then write why it isn't lower.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Ask Where It Comes From",
+    "description": "Pick one strong feeling and write what might be triggering it.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 6,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "family",
+      "work"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Notice the Feeling in Your Body",
+    "description": "Write where you feel your current emotion in your body, without judging it.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Name Three Feelings You Had Today",
+    "description": "List three different feelings you experienced today.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 3,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "List What You Can Control",
+    "description": "Write three things you can control today and one you can't.",
+    "category": "reflection",
+    "sub_category": "control",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "school",
+      "work",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Sort Worries Into Two Piles",
+    "description": "Write your worries in two lists: changeable and not changeable today.",
+    "category": "reflection",
+    "sub_category": "control",
+    "estimated_minutes": 6,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "stress",
+      "work",
+      "school",
+      "money"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Pick One Controllable Action",
+    "description": "Choose one small action within your control and commit to it today.",
+    "category": "reflection",
+    "sub_category": "control",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Your Boundary",
+    "description": "Write one boundary you want to set or hold this week.",
+    "category": "reflection",
+    "sub_category": "control",
+    "estimated_minutes": 5,
+    "difficulty": 3,
+    "required_energy": "medium",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "family",
+      "friends",
+      "relationships",
+      "work"
+    ],
+    "base_xp": 15
+  },
+  {
+    "title": "Decide What to Let Go Of",
+    "description": "Write one thing you will stop trying to control this week.",
+    "category": "reflection",
+    "sub_category": "control",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed",
+      "low"
+    ],
+    "situation_tags": [
+      "stress",
+      "family"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Tomorrow's First Step",
+    "description": "Write the first step you'll take tomorrow, and when.",
+    "category": "reflection",
+    "sub_category": "plan-tomorrow",
+    "estimated_minutes": 4,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation",
+      "school",
+      "work"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write One Good Thing About Today",
+    "description": "Write one thing you want to remember about today.",
+    "category": "reflection",
+    "sub_category": "plan-tomorrow",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay",
+      "low"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Plan One Energising Thing",
+    "description": "Plan one small thing you enjoy into tomorrow.",
+    "category": "reflection",
+    "sub_category": "plan-tomorrow",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Set Tomorrow's Intention",
+    "description": "Write one intention for how you want tomorrow to feel.",
+    "category": "reflection",
+    "sub_category": "plan-tomorrow",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Preview Tomorrow's Schedule",
+    "description": "Write tomorrow's schedule in three lines: morning, midday, evening.",
+    "category": "reflection",
+    "sub_category": "plan-tomorrow",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "stressed"
+    ],
+    "situation_tags": [
+      "school",
+      "work",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "List Three Wins From This Week",
+    "description": "Write three things you finished or handled this week.",
+    "category": "reflection",
+    "sub_category": "achievements",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write What You Learned",
+    "description": "Write one lesson you learned from a recent mistake.",
+    "category": "reflection",
+    "sub_category": "achievements",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "okay"
+    ],
+    "situation_tags": [
+      "other",
+      "work",
+      "school"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Note How Far You've Come",
+    "description": "Compare where you were a month ago to where you are now.",
+    "category": "reflection",
+    "sub_category": "achievements",
+    "estimated_minutes": 6,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Give Yourself Credit",
+    "description": "Write one thing you did today that took courage or care.",
+    "category": "reflection",
+    "sub_category": "achievements",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low",
+      "okay"
+    ],
+    "situation_tags": [
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write Your Top Five Strengths",
+    "description": "Write down five strengths you know you have.",
+    "category": "reflection",
+    "sub_category": "achievements",
+    "estimated_minutes": 4,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "low"
+    ],
+    "situation_tags": [
+      "motivation",
+      "loneliness"
+    ],
+    "base_xp": 10
+  }
+]

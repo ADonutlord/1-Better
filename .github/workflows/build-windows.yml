@@ -1,0 +1,38 @@
+name: Build Windows exe
+
+# Builds the 1% Better Windows desktop app and uploads the .exe.
+# Run it from the Actions tab (Run workflow) on any branch.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-percent-better-windows
+          path: build/windows/x64/runner/Release/
+          if-no-files-found: error
