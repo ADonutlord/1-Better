@@ -121,10 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
         final loop = _app.loop;
         if (loop == null) {
           return const Scaffold(
+            backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),
           );
         }
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: const Text('1% Better 🌱'),
             actions: [

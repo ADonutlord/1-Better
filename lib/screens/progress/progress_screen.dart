@@ -69,6 +69,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final profile = _app.loop?.profile;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Progress'),
         actions: [

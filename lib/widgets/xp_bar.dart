@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../logic/level_calculator.dart';
+import 'tree.dart';
 
-/// LEVEL 8 🌱 with an XP progress bar.
+/// LEVEL chip with a growth tree; the progress bar shows how far the tree is
+/// grown (fully grown at level 200).
 class XpBar extends StatelessWidget {
-  const XpBar({super.key, required this.totalXp, this.compact = false});
+  const XpBar({
+    super.key,
+    required this.totalXp,
+    this.compact = false,
+    this.background = false,
+  });
 
   final int totalXp;
   final bool compact;
+
+  /// When true, the animated tree fills the whole area behind the level info.
+  final bool background;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final level = LevelCalculator.levelForXp(totalXp);
-    final progress = LevelCalculator.levelProgress(totalXp, level);
     final toNext = LevelCalculator.xpToNextLevel(level);
     final into = LevelCalculator.xpIntoLevel(totalXp, level);
+    final growth = LevelCalculator.treeGrowth(totalXp);
+    final grownPercent = (growth * 100).round();
 
-    return Column(
+    final info = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -28,7 +39,7 @@ class XpBar extends StatelessWidget {
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(width: 6),
-            const Text('🌱'),
+            Text(growth >= 1 ? '🌳' : '🌱'),
             const Spacer(),
             Text('$into / $toNext XP',
                 style: theme.textTheme.bodySmall
@@ -39,7 +50,7 @@ class XpBar extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
-            value: progress.clamp(0.0, 1.0),
+            value: growth.clamp(0.0, 1.0),
             minHeight: compact ? 6 : 10,
             backgroundColor: theme.colorScheme.surfaceContainerHighest,
             color: theme.colorScheme.primary,
@@ -47,10 +58,37 @@ class XpBar extends StatelessWidget {
         ),
         if (!compact) ...[
           const SizedBox(height: 6),
-          Text('$toNext XP to Level ${level + 1}',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            growth >= 1
+                ? '🌳 Fully grown!'
+                : '$grownPercent% grown · $toNext XP to Level ${level + 1}',
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
         ],
+      ],
+    );
+
+    if (background) {
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: TreeGrowthIndicator(growth: growth, background: true),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(22),
+            child: info,
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        TreeGrowthIndicator(growth: growth, size: compact ? 72 : 120),
+        const SizedBox(width: 14),
+        Expanded(child: info),
       ],
     );
   }

@@ -4,6 +4,9 @@ library;
 class LevelCalculator {
   LevelCalculator._();
 
+  /// Max level; at this level the growth tree is fully grown.
+  static const int maxLevel = 200;
+
   /// Cumulative XP required to reach `level`.
   ///
   /// Threshold(level n) = 25 * (n - 1) * (n + 2)
@@ -16,9 +19,16 @@ class LevelCalculator {
     var level = 1;
     while (xpForLevel(level + 1) <= totalXp) {
       level += 1;
-      if (level >= 200) break;
+      if (level >= maxLevel) break;
     }
     return level;
+  }
+
+  /// Overall progression toward a fully grown tree (level 200), 0.0 -> 1.0.
+  static double treeGrowth(int totalXp) {
+    final cap = xpForLevel(maxLevel);
+    if (cap <= 0) return 0;
+    return (totalXp / cap).clamp(0.0, 1.0);
   }
 
   /// XP already earned inside the current level.

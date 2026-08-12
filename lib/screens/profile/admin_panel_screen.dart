@@ -112,6 +112,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       final data = (res as Map<String, dynamic>?)?.cast<String, dynamic>();
       setState(() => _levelResult = data);
       _snack('Level set. 🌱');
+      await AppState.instance.loadDailyLoop();
     } catch (e) {
       if (!mounted) return;
       setState(() => _levelResult = null);

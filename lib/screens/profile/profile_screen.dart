@@ -44,8 +44,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const ListTile(
-              title: Text('Profile picture',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              title: Text(
+                'Profile picture',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
@@ -164,8 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: Text('What do you do?',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+              child: Text(
+                'What do you do?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
             ),
             for (final key in Professions.keys)
               ListTile(
@@ -183,9 +187,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await AuthService.instance.updateProfile(profession: picked);
       await _app.loadDailyLoop();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profession updated. 🌱')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Profession updated. 🌱')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -229,12 +233,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (age == null || age == current || !mounted) return;
     setState(() => _savingProfile = true);
     try {
-      await AuthService.instance.updateProfile(birthYear: DateTime.now().year - age);
+      await AuthService.instance.updateProfile(
+        birthYear: DateTime.now().year - age,
+      );
       await _app.loadDailyLoop();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Age updated. 🌱')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Age updated. 🌱')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -272,13 +278,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listenable: _app,
       builder: (context, _) {
         final loop = _app.loop;
-        final profile = loop?.profile ??
+        final profile =
+            loop?.profile ??
             const UserProfile(
-                id: '', displayName: '', role: 'user', level: 1, totalXp: 0,
-                currentStreak: 0, longestStreak: 0);
+              id: '',
+              displayName: '',
+              role: 'user',
+              level: 1,
+              totalXp: 0,
+              currentStreak: 0,
+              longestStreak: 0,
+            );
         final name = profile.displayName;
 
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(title: const Text('Profile')),
           body: ListView(
             padding: const EdgeInsets.all(16),
@@ -308,50 +322,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(name,
-                                      style: theme.textTheme.titleLarge
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w800)),
+                                  Text(
+                                    name,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
                                   const SizedBox(height: 4),
                                   Text(
                                     _roleLabel(profile.role),
                                     style: theme.textTheme.labelMedium
                                         ?.copyWith(
-                                            color:
-                                                theme.colorScheme.primary,
-                                            fontWeight: FontWeight.w700),
+                                          color: theme.colorScheme.primary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                   ),
                                   const SizedBox(height: 2),
                                   InkWell(
                                     onTap: _savingProfile
                                         ? null
                                         : () => _editProfession(
-                                            profile.profession),
+                                            profile.profession,
+                                          ),
                                     borderRadius: BorderRadius.circular(6),
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 2,
+                                      ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.work_outline,
-                                              size: 14,
-                                              color: theme
-                                                  .colorScheme.onSurfaceVariant),
+                                          Icon(
+                                            Icons.work_outline,
+                                            size: 14,
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                           const SizedBox(width: 6),
                                           Flexible(
                                             child: Text(
                                               Professions.labelFor(
-                                                  profile.profession),
+                                                profile.profession,
+                                              ),
                                               style: theme.textTheme.labelMedium
                                                   ?.copyWith(
-                                                      color: theme.colorScheme
-                                                          .onSurfaceVariant),
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
                                             ),
                                           ),
                                           const SizedBox(width: 4),
-                                          Icon(Icons.edit_outlined,
-                                              size: 13,
-                                              color: theme.colorScheme.primary),
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            size: 13,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -362,14 +388,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         : () => _editAge(profile.age),
                                     borderRadius: BorderRadius.circular(6),
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 2,
+                                      ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.cake_outlined,
-                                              size: 14,
-                                              color: theme
-                                                  .colorScheme.onSurfaceVariant),
+                                          Icon(
+                                            Icons.cake_outlined,
+                                            size: 14,
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                           const SizedBox(width: 6),
                                           Flexible(
                                             child: Text(
@@ -378,14 +408,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   : 'Set your age',
                                               style: theme.textTheme.labelMedium
                                                   ?.copyWith(
-                                                      color: theme.colorScheme
-                                                          .onSurfaceVariant),
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
                                             ),
                                           ),
                                           const SizedBox(width: 4),
-                                          Icon(Icons.edit_outlined,
-                                              size: 13,
-                                              color: theme.colorScheme.primary),
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            size: 13,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -399,11 +433,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
-                            : Icon(_editingName
-                                ? Icons.check
-                                : Icons.edit_outlined),
+                            : Icon(
+                                _editingName
+                                    ? Icons.check
+                                    : Icons.edit_outlined,
+                              ),
                         onPressed: _savingName
                             ? null
                             : () {
@@ -432,54 +470,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Card(
                 child: Column(
                   children: [
-                    _menuTile(context, Icons.dark_mode_outlined, 'Appearance',
-                        'Light, dark, or match your system', () {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        builder: (_) => const _ThemeModeSheet(),
-                      );
-                    }),
-                    _menuTile(context, Icons.timer_outlined, 'Focus timer',
-                        '25-minute focused sessions', () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const FocusTimerScreen()),
-                      );
-                    }),
-                    _menuTile(context, Icons.shield_outlined, 'Privacy',
-                        'What we store and how we protect it', () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const PrivacyScreen()),
-                      );
-                    }),
-                    _menuTile(context, Icons.block_outlined, 'Blocked users',
-                        'Manage who can\'t match with you', () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const BlockedUsersScreen()),
-                      );
-                    }),
-                    _menuTile(context, Icons.emergency_outlined,
-                        'Urgent help', 'Crisis resources that are not us', () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const UrgentHelpScreen()),
-                      );
-                    }),
-                    if (profile.isAdmin || profile.isOwner)
-                      _menuTile(context, Icons.admin_panel_settings_outlined,
-                          'Admin panel', 'Change account roles', () {
+                    _menuTile(
+                      context,
+                      Icons.dark_mode_outlined,
+                      'Appearance',
+                      'Light, dark, or match your system',
+                      () {
+                        showModalBottomSheet<void>(
+                          context: context,
+                          builder: (_) => const _ThemeModeSheet(),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.timer_outlined,
+                      'Focus timer',
+                      '25-minute focused sessions',
+                      () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (_) => const AdminPanelScreen()),
+                            builder: (_) => const FocusTimerScreen(),
+                          ),
                         );
-                      }),
-                    _menuTile(context, Icons.delete_outline, 'Delete account',
-                        'Permanently remove your data', () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const DeleteAccountScreen()),
-                      );
-                    }, destructive: true),
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.shield_outlined,
+                      'Privacy',
+                      'What we store and how we protect it',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PrivacyScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.block_outlined,
+                      'Blocked users',
+                      'Manage who can\'t match with you',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BlockedUsersScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.emergency_outlined,
+                      'Urgent help',
+                      'Crisis resources that are not us',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const UrgentHelpScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    if (profile.isAdmin || profile.isOwner)
+                      _menuTile(
+                        context,
+                        Icons.admin_panel_settings_outlined,
+                        'Admin panel',
+                        'Change account roles',
+                        () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const AdminPanelScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    _menuTile(
+                      context,
+                      Icons.delete_outline,
+                      'Delete account',
+                      'Permanently remove your data',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const DeleteAccountScreen(),
+                          ),
+                        );
+                      },
+                      destructive: true,
+                    ),
                   ],
                 ),
               ),
@@ -509,17 +591,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _menuTile(BuildContext context, IconData icon, String title,
-      String subtitle, VoidCallback onTap,
-      {bool destructive = false}) {
+  Widget _menuTile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String subtitle,
+    VoidCallback onTap, {
+    bool destructive = false,
+  }) {
     final theme = Theme.of(context);
     final color = destructive ? theme.colorScheme.error : null;
     return ListTile(
       leading: Icon(icon, color: color),
-      title: Text(title,
-          style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: color ?? theme.colorScheme.onSurface)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: color ?? theme.colorScheme.onSurface,
+        ),
+      ),
       subtitle: Text(subtitle),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
@@ -527,11 +617,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   static String _roleLabel(String role) => switch (role) {
-        'owner' => 'OWNER · THE BOSS',
-        'admin' => 'ADMIN',
-        'testing' => 'TESTER',
-        _ => 'MEMBER',
-      };
+    'owner' => 'OWNER · THE BOSS',
+    'admin' => 'ADMIN',
+    'testing' => 'TESTER',
+    _ => 'MEMBER',
+  };
 }
 
 class _ProfileAvatar extends StatelessWidget {
@@ -581,10 +671,15 @@ class _ProfileAvatar extends StatelessWidget {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: theme.colorScheme.primary),
+                          strokeWidth: 2,
+                          color: theme.colorScheme.primary,
+                        ),
                       )
-                    : Icon(Icons.photo_camera_outlined,
-                        size: 18, color: theme.colorScheme.onSecondaryContainer),
+                    : Icon(
+                        Icons.photo_camera_outlined,
+                        size: 18,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
               ),
             ),
           ),
@@ -613,13 +708,19 @@ class _ThemeModeSheetState extends State<_ThemeModeSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Appearance',
-                style: theme.textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.w800)),
+            Text(
+              'Appearance',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text('Choose how the app looks.',
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              'Choose how the app looks.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 16),
             ListenableBuilder(
               listenable: _theme,
@@ -654,13 +755,30 @@ class _ThemeModeSheetState extends State<_ThemeModeSheet> {
               listenable: _theme,
               builder: (context, _) => SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.blur_on),
-                title: const Text('Liquid Glass',
-                    style: TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: const Text(
-                    'Frosted translucent surfaces, like iOS.'),
+                secondary: const Icon(Icons.water_drop_outlined),
+                title: const Text(
+                  'Liquid Glass',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text('Frosted translucent surfaces, like iOS.'),
                 value: _theme.liquid,
                 onChanged: _theme.setLiquid,
+              ),
+            ),
+            ListenableBuilder(
+              listenable: _theme,
+              builder: (context, _) => SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.blur_on),
+                title: const Text(
+                  'Gaussian Blur',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text(
+                  'Real backdrop blur for the glass surfaces.',
+                ),
+                value: _theme.blur,
+                onChanged: _theme.liquid ? _theme.setBlur : null,
               ),
             ),
           ],

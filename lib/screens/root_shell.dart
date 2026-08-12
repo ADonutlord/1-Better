@@ -1,10 +1,15 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/theme_controller.dart';
+import '../logic/level_calculator.dart';
 import '../screens/chat/chat_list_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/progress/progress_screen.dart';
+import '../widgets/tree.dart';
 
 /// Responsive shell: bottom NavigationBar on phones, NavigationRail on desktop.
 class RootShell extends StatefulWidget {
@@ -27,6 +32,60 @@ class _RootShellState extends State<RootShell> {
       const ProgressScreen(),
       const ProfileScreen(),
     ];
+  }
+
+  /// The animated growth tree filling the whole screen behind the chrome,
+  /// gaussian-blurred when the Liquid Glass theme is active.
+  Widget _backdrop() {
+    return ListenableBuilder(
+      listenable: Listenable.merge([_app, ThemeController.instance]),
+      builder: (context, _) {
+        final liquid = ThemeController.instance.liquid;
+        final blur = ThemeController.instance.blur;
+        final tree = TreeGrowthIndicator(
+          growth: LevelCalculator.treeGrowth(_app.loop?.profile.totalXp ?? 0),
+          background: true,
+          backgroundAnchor: 0.1,
+        );
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Transform.translate(
+              offset: const Offset(24, 0),
+              child: tree,
+            ),
+            if (liquid && blur)
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Text/icon color for the nav chrome, picked from the luminance of whatever
+  /// shows through the chrome surface behind it (the growth tree).
+  Color _chromeTextColor(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final liquid = ThemeController.instance.liquid;
+    final growth = LevelCalculator.treeGrowth(_app.loop?.profile.totalXp ?? 0);
+
+    final chrome = isDark
+        ? (liquid ? const Color(0xB3161D18) : const Color(0xFF1D2620))
+        : (liquid ? const Color(0xB3F4F8F5) : const Color(0xFFF5F9F6));
+    final foliage = isDark ? const Color(0xFF2E7D32) : const Color(0xFF43A047);
+    final backdrop = Color.alphaBlend(
+      chrome,
+      Color.lerp(theme.colorScheme.surface, foliage, growth.clamp(0.0, 1.0))!,
+    );
+    return backdrop.computeLuminance() > 0.45
+        ? const Color(0xFF16221A)
+        : Colors.white;
   }
 
   void _rebuildPages() {
@@ -57,56 +116,122 @@ class _RootShellState extends State<RootShell> {
       (icon: const Icon(Icons.person_outline), label: 'Profile'),
     ];
 
-    return LayoutBuilder(builder: (context, constraints) {
-      final isDesktop = constraints.maxWidth >= 900;
-      if (isDesktop) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 1100,
-                  selectedIndex: _index,
-                  onDestinationSelected: (i) => setState(() => _index = i),
-                  labelType: constraints.maxWidth >= 1100
-                      ? NavigationRailLabelType.none
-                      : NavigationRailLabelType.all,
-                  leading: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: _LogoBadge(),
-                  ),
-                  destinations: [
-                    for (final d in destinations)
-                      NavigationRailDestination(
-                        icon: d.icon,
-                        selectedIcon: d.icon,
-                        label: Text(d.label),
-                      ),
-                  ],
-                ),
-              ),
-              const VerticalDivider(width: 1, thickness: 1),
-              Expanded(child: _pages[_index]),
-            ],
-          ),
-        );
-      }
+    return ListenableBuilder(
+      listenable: Listenable.merge([_app, ThemeController.instance]),
+      builder: (context, _) {
+        final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final liquid = ThemeController.instance.liquid;
+        final chromeColor = _chromeTextColor(context);
+        final chromeBg = isDark
+            ? (liquid ? const Color(0xB3161D18) : const Color(0xFF1D2620))
+            : (liquid ? const Color(0xB3F4F8F5) : const Color(0xFFF5F9F6));
 
-      return Scaffold(
-        body: SafeArea(child: _pages[_index]),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: [
-            for (final d in destinations)
-              NavigationDestination(
-                icon: d.icon,
-                label: d.label,
-              ),
-          ],
-        ),
-      );
-    });
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktop = constraints.maxWidth >= 900;
+            final extended = constraints.maxWidth >= 1100;
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                _backdrop(),
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: isDesktop
+                      ? Row(
+                          children: [
+                            SafeArea(
+                              child: Theme(
+                                data: theme.copyWith(
+                                  navigationRailTheme: NavigationRailThemeData(
+                                    unselectedIconTheme: IconThemeData(
+                                      color: chromeColor.withValues(
+                                        alpha: 0.85,
+                                      ),
+                                    ),
+                                    selectedIconTheme: IconThemeData(
+                                      color: chromeColor,
+                                    ),
+                                    unselectedLabelTextStyle: TextStyle(
+                                      color: chromeColor,
+                                    ),
+                                    selectedLabelTextStyle: TextStyle(
+                                      color: chromeColor,
+                                    ),
+                                  ),
+                                ),
+                                child: NavigationRail(
+                                  backgroundColor: chromeBg,
+                                  extended: extended,
+                                  selectedIndex: _index,
+                                  onDestinationSelected: (i) =>
+                                      setState(() => _index = i),
+                                  labelType: extended
+                                      ? NavigationRailLabelType.none
+                                      : NavigationRailLabelType.all,
+                                  leading: const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    child: _LogoBadge(),
+                                  ),
+                                  destinations: [
+                                    for (final d in destinations)
+                                      NavigationRailDestination(
+                                        icon: d.icon,
+                                        selectedIcon: d.icon,
+                                        label: Text(d.label),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const VerticalDivider(width: 1, thickness: 1),
+                            Expanded(child: _pages[_index]),
+                          ],
+                        )
+                      : SafeArea(child: _pages[_index]),
+                  bottomNavigationBar: isDesktop
+                      ? null
+                      : Theme(
+                          data: theme.copyWith(
+                            navigationBarTheme: NavigationBarThemeData(
+                              iconTheme: WidgetStateProperty.resolveWith(
+                                (states) => IconThemeData(
+                                  color: states.contains(WidgetState.selected)
+                                      ? chromeColor
+                                      : chromeColor.withValues(alpha: 0.85),
+                                ),
+                              ),
+                            ),
+                          ),
+                          child: NavigationBar(
+                            backgroundColor: chromeBg,
+                            indicatorColor: theme.colorScheme.primaryContainer,
+                            labelTextStyle: WidgetStatePropertyAll(
+                              TextStyle(
+                                color: chromeColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            selectedIndex: _index,
+                            onDestinationSelected: (i) =>
+                                setState(() => _index = i),
+                            destinations: [
+                              for (final d in destinations)
+                                NavigationDestination(
+                                  icon: d.icon,
+                                  label: d.label,
+                                ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
 
