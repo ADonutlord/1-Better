@@ -698,6 +698,36 @@ class _ThemeModeSheet extends StatefulWidget {
 class _ThemeModeSheetState extends State<_ThemeModeSheet> {
   final ThemeController _theme = ThemeController.instance;
 
+  Future<void> _onLiquidChanged(bool enabled) async {
+    if (enabled) {
+      await _theme.setLiquid(true);
+      return;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Turn off Liquid Glass?'),
+        content: const Text(
+          'The background tree will not be clearly seen with this option '
+          'turned off. Do you want to continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Keep it on'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Turn off'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await _theme.setLiquid(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -762,7 +792,7 @@ class _ThemeModeSheetState extends State<_ThemeModeSheet> {
                 ),
                 subtitle: const Text('Frosted translucent surfaces, like iOS.'),
                 value: _theme.liquid,
-                onChanged: _theme.setLiquid,
+                onChanged: _onLiquidChanged,
               ),
             ),
             ListenableBuilder(

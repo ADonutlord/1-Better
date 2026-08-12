@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'core/app_state.dart';
 import 'core/theme/app_theme.dart';
@@ -101,6 +102,24 @@ class _AuthGateState extends State<AuthGate> {
 class SuspendedScreen extends StatelessWidget {
   const SuspendedScreen({super.key});
 
+  static const _supportEmail = '1percentbettercustomersupport@gmail.com';
+
+  Future<void> _mailSupport(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: _supportEmail,
+      queryParameters: {
+        'subject': 'Account suspension appeal',
+      },
+    );
+    final launched = await launchUrl(uri);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No mail app found. Email $_supportEmail')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -127,6 +146,23 @@ class SuspendedScreen extends StatelessWidget {
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => _mailSupport(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      '1percentbettercustomersupport@gmail.com',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -20,7 +20,7 @@ class ThemeController extends ChangeNotifier {
   ThemeMode _mode = ThemeMode.system;
   ThemeMode get mode => _mode;
 
-  bool _liquid = false;
+  bool _liquid = true;
   bool get liquid => _liquid;
 
   bool _blur = false;
@@ -34,7 +34,7 @@ class ThemeController extends ChangeNotifier {
       _light => ThemeMode.light,
       _ => ThemeMode.system,
     };
-    _liquid = prefs.getBool(_liquidKey) ?? false;
+    _liquid = prefs.getBool(_liquidKey) ?? true;
     _blur = prefs.getBool(_blurKey) ?? false;
     notifyListeners();
   }
