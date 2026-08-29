@@ -81,7 +81,7 @@ class NotificationService {
       tz.setLocalLocation(tz.getLocation('UTC'));
     }
 
-    const androidSettings = AndroidInitializationSettings('ic_stat_sprout');
+    const androidSettings = AndroidInitializationSettings('ic_stat_bell');
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
