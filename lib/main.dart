@@ -10,6 +10,7 @@ import 'screens/root_shell.dart';
 import 'screens/splash/loading_screen.dart';
 import 'services/auth_service.dart';
 import 'services/e2ee_service.dart';
+import 'services/notification_service.dart';
 import 'services/supabase_service.dart';
 
 Future<void> main() async {
@@ -17,6 +18,8 @@ Future<void> main() async {
   await SupabaseService.instance.initialize();
   AppState.instance.bindAuth(SupabaseService.instance.client);
   await ThemeController.instance.load();
+  await NotificationService.instance.load();
+  await NotificationService.instance.restoreAll();
 
   runApp(const OnePercentBetterApp());
 }

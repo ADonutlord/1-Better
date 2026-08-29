@@ -3,6 +3,16 @@
          Debug builds get this from src/debug/AndroidManifest.xml, but
          release builds need it here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Show local notification banners on Android 13+. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Deliver the daily reminder at the exact scheduled time (8:00 AM). -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- Re-schedule the daily reminder after the device reboots. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Show full-screen alarm notifications over the lock screen. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <!-- Ring/vibrate for alarms. -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:label="1% Better"
         android:name="${applicationName}"

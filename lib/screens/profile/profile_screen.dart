@@ -12,6 +12,7 @@ import '../focus/focus_timer_screen.dart';
 import 'admin_panel_screen.dart';
 import 'blocked_users_screen.dart';
 import 'privacy_screen.dart';
+import 'schedules_screen.dart';
 import 'urgent_help_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -504,6 +505,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const PrivacyScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.alarm_outlined,
+                      'Schedules & alarms',
+                      'Set reminders or loud alarms to stay on track',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SchedulesScreen(),
                           ),
                         );
                       },
