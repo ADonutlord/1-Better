@@ -9,6 +9,8 @@ import '../../services/auth_service.dart';
 import '../../widgets/xp_bar.dart';
 import '../auth/delete_account_screen.dart';
 import '../focus/focus_timer_screen.dart';
+import '../study/study_stats_screen.dart';
+import '../study/study_timer_screen.dart';
 import 'admin_panel_screen.dart';
 import 'blocked_users_screen.dart';
 import 'privacy_screen.dart';
@@ -498,6 +500,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     _menuTile(
                       context,
+                      Icons.school_outlined,
+                      'Study timer',
+                      'Lock your phone & track study time',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const StudyTimerScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.bar_chart_outlined,
+                      'Study statistics',
+                      'Weekly hours studied graph',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const StudyStatsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
                       Icons.shield_outlined,
                       'Privacy',
                       'What we store and how we protect it',
@@ -634,6 +662,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'owner' => 'OWNER · THE BOSS',
     'admin' => 'ADMIN',
     'testing' => 'TESTER',
+    'wanniya' => 'WANNIYA',
     _ => 'MEMBER',
   };
 }

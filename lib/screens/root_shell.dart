@@ -6,9 +6,11 @@ import '../core/app_state.dart';
 import '../core/theme_controller.dart';
 import '../logic/level_calculator.dart';
 import '../screens/chat/chat_list_screen.dart';
+import '../screens/goals/goals_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/progress/progress_screen.dart';
+import '../screens/study/study_screen.dart';
 import '../widgets/tree.dart';
 
 /// Responsive shell: bottom NavigationBar on phones, NavigationRail on desktop.
@@ -28,7 +30,9 @@ class _RootShellState extends State<RootShell> {
   List<Widget> _buildPages() {
     return [
       const HomeScreen(),
+      const GoalsScreen(),
       const ChatListScreen(),
+      const StudyScreen(),
       const ProgressScreen(),
       const ProfileScreen(),
     ];
@@ -111,7 +115,9 @@ class _RootShellState extends State<RootShell> {
   Widget build(BuildContext context) {
     final destinations = <({Widget icon, String label})>[
       (icon: const Icon(Icons.home_outlined), label: 'Home'),
+      (icon: const Icon(Icons.flag_outlined), label: 'Goals'),
       (icon: const Icon(Icons.chat_bubble_outline), label: 'Chat'),
+      (icon: const Icon(Icons.school_outlined), label: 'Study'),
       (icon: const Icon(Icons.insights_outlined), label: 'Progress'),
       (icon: const Icon(Icons.person_outline), label: 'Profile'),
     ];

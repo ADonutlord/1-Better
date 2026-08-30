@@ -30,6 +30,11 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   bool _savingLevel = false;
   Map<String, dynamic>? _levelResult;
 
+  final _streakEmail = TextEditingController();
+  final _streakText = TextEditingController();
+  bool _savingStreak = false;
+  Map<String, dynamic>? _streakResult;
+
   static const _durations = <(String, String?)>[
     ('1 hour', '1 hour'),
     ('24 hours', '24 hours'),
@@ -44,6 +49,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     _uid.dispose();
     _levelEmail.dispose();
     _levelText.dispose();
+    _streakEmail.dispose();
+    _streakText.dispose();
     super.dispose();
   }
 
@@ -53,13 +60,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   List<String> get _roleOptions =>
-      ['user', 'helper', 'admin', if (_isOwner) 'testing', if (_isOwner) 'owner'];
+      ['user', 'helper', 'admin', if (_isOwner) 'testing', if (_isOwner) 'wanniya', if (_isOwner) 'owner'];
 
   String _roleLabel(String role) => switch (role) {
         'user' => 'Member',
         'helper' => 'Helper',
         'admin' => 'Admin',
         'testing' => 'Tester',
+        'wanniya' => 'Wanniya',
         'owner' => 'Owner',
         _ => role,
       };
@@ -124,6 +132,36 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   void _snack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _setStreak() async {
+    final email = _streakEmail.text.trim();
+    final streak = int.tryParse(_streakText.text.trim());
+    if (email.isEmpty || streak == null) {
+      _snack('Enter the account email and a streak first.');
+      return;
+    }
+    setState(() {
+      _savingStreak = true;
+      _streakResult = null;
+    });
+    try {
+      final res = await SupabaseService.instance.client.rpc(
+        'admin_set_streak_by_email',
+        params: {'p_email': email, 'p_streak': streak},
+      );
+      if (!mounted) return;
+      final data = (res as Map<String, dynamic>?)?.cast<String, dynamic>();
+      setState(() => _streakResult = data);
+      _snack('Daily streak set. 🔥');
+      await AppState.instance.loadDailyLoop();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _streakResult = null);
+      _snack('$e');
+    } finally {
+      if (mounted) setState(() => _savingStreak = false);
+    }
   }
 
   Future<void> _suspend() async {
@@ -453,6 +491,87 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                                 '${_levelResult!['display_name'] ?? _levelResult!['email']} '
                                 'is now level ${_levelResult!['level']} '
                                 '(${_levelResult!['total_xp']} XP)',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (_isOwner) ...[
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Set daily streak (owner only)',
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Set any account\'s daily streak by entering their '
+                        'email and the number of days. Their last action date '
+                        'is set to today so the streak shows as live.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _streakEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          hintText: 'name@example.com',
+                          prefixIcon: Icon(Icons.mail_outline),
+                          isDense: true,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: _streakText,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: 'Streak in days',
+                          prefixIcon: Icon(Icons.local_fire_department_outlined),
+                          isDense: true,
+                        ),
+                        onSubmitted: (_) => _setStreak(),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _savingStreak ? null : _setStreak,
+                          icon: _savingStreak
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2.2, color: Colors.white),
+                                )
+                              : const Icon(Icons.local_fire_department),
+                          label: const Text('Set streak'),
+                        ),
+                      ),
+                      if (_streakResult != null) ...[
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            const Icon(Icons.local_fire_department,
+                                color: Color(0xFF2E5C3A)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                '${_streakResult!['display_name'] ?? _streakResult!['email']} '
+                                'is now on a ${_streakResult!['current_streak']}-day streak '
+                                '(best: ${_streakResult!['longest_streak']})',
                                 style: theme.textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.w700),
                               ),

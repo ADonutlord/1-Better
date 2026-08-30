@@ -36,6 +36,7 @@ class UserProfile {
   bool get isAdmin => role == 'admin';
   bool get isOwner => role == 'owner';
   bool get isTester => role == 'testing';
+  bool get isWanniya => role == 'wanniya';
 
   /// Current age derived from birth year, or null if not set.
   int? get age {
@@ -80,15 +81,73 @@ class UserProfile {
       };
 }
 
+/// One uninterrupted study focus block. The total time studied on a given
+/// day is the sum of that day's sessions.
+class StudySession {
+  const StudySession({
+    required this.id,
+    required this.userId,
+    required this.startedAt,
+    required this.endedAt,
+    required this.durationSeconds,
+  });
+
+  final String id;
+  final String userId;
+  final DateTime startedAt;
+  final DateTime endedAt;
+  final int durationSeconds;
+
+  /// Duration in minutes (rounded to the nearest minute).
+  int get durationMinutes => (durationSeconds / 60).round();
+
+  /// Duration in hours (with fractions), useful for aggregation.
+  double get durationHours => durationSeconds / 3600;
+
+  factory StudySession.fromJson(Map<String, dynamic> json) => StudySession(
+        id: (json['id'] as String?) ?? '',
+        userId: (json['user_id'] as String?) ?? '',
+        startedAt: _parseDateTime(json['started_at']) ?? DateTime.now(),
+        endedAt: _parseDateTime(json['ended_at']) ?? DateTime.now(),
+        durationSeconds: (json['duration_seconds'] as int?) ?? 0,
+      );
+}
+
+/// Local "minutes spent on the phone" logged by the student for one day.
+/// Apps can't read device screen-usage automatically, so the student enters
+/// it (from Digital Wellbeing / Screen Time) and we graph it beside study time.
+class DailyScreenTime {
+  const DailyScreenTime({
+    required this.id,
+    required this.userId,
+    required this.day,
+    required this.minutes,
+  });
+
+  final String id;
+  final String userId;
+  final DateTime day;
+  final int minutes;
+
+  /// Screen time in hours (with fractions), for aggregation.
+  double get hours => minutes / 60;
+
+  factory DailyScreenTime.fromJson(Map<String, dynamic> json) =>
+      DailyScreenTime(
+        id: (json['id'] as String?) ?? '',
+        userId: (json['user_id'] as String?) ?? '',
+        day: _parseDate(json['day']) ?? DateTime.now(),
+        minutes: (json['minutes'] as int?) ?? 0,
+      );
+}
+
 class MoodCheckin {
   const MoodCheckin({
     required this.id,
     required this.mood,
     required this.situation,
     required this.createdAt,
-  });
-
-  final String id;
+  });  final String id;
   final String mood;
   final List<String> situation;
   final DateTime createdAt;
@@ -404,9 +463,66 @@ class DailyLoop {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+/// Levels in the goal breakdown hierarchy. A lifetime goal is split into
+/// yearly, which split into monthly, which split into daily tasks.
+enum GoalLevel { lifetime, yearly, monthly, daily }
+
+/// One node in a user's goal tree. Lives in the self-referencing `goals`
+/// table; [children] holds the sub-goals one level down (built client-side
+/// from a flat list by [GoalService]).
+class Goal {
+  const Goal({
+    required this.id,
+    required this.parentGoalId,
+    required this.level,
+    required this.title,
+    required this.description,
+    required this.completed,
+    required this.createdAt,
+    this.children = const [],
+  });
+
+  final String id;
+  final String? parentGoalId;
+  final GoalLevel level;
+  final String title;
+  final String description;
+  final bool completed;
+  final DateTime createdAt;
+  final List<Goal> children;
+
+  /// The goal level directly below this one, or null for daily (a leaf).
+  GoalLevel? get childLevel => switch (level) {
+        GoalLevel.lifetime => GoalLevel.yearly,
+        GoalLevel.yearly => GoalLevel.monthly,
+        GoalLevel.monthly => GoalLevel.daily,
+        GoalLevel.daily => null,
+      };
+
+  String get levelLabel => switch (level) {
+        GoalLevel.lifetime => 'Lifetime goal',
+        GoalLevel.yearly => 'Yearly',
+        GoalLevel.monthly => 'Monthly',
+        GoalLevel.daily => 'Daily',
+      };
+
+  factory Goal.fromJson(Map<String, dynamic> json) => Goal(
+        id: (json['id'] as String?) ?? '',
+        parentGoalId: json['parent_goal_id'] as String?,
+        level: switch (json['level'] as String?) {
+          'yearly' => GoalLevel.yearly,
+          'monthly' => GoalLevel.monthly,
+          'daily' => GoalLevel.daily,
+          _ => GoalLevel.lifetime,
+        },
+        title: (json['title'] as String?) ?? '',
+        description: (json['description'] as String?) ?? '',
+        completed: (json['completed'] as bool?) ?? false,
+        createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+      );
+}
+
+
 DateTime? _parseDateTime(Object? value) {
   if (value == null) return null;
   // Postgres serialises 'infinity' as-is; map it to a far-future sentinel
