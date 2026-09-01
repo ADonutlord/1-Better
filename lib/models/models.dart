@@ -523,6 +523,105 @@ class Goal {
 }
 
 
+/// A community post on the Instagram-style feed. [author] carries the
+/// display/profile snapshot (joined from profiles) so a post shows who asked.
+class Post {
+  const Post({
+    required this.id,
+    required this.userId,
+    required this.question,
+    required this.body,
+    required this.createdAt,
+    this.answerCount = 0,
+    this.author,
+  });
+
+  final String id;
+  final String userId;
+  final String question;
+  final String body;
+  final DateTime createdAt;
+  final int answerCount;
+  final UserProfile? author;
+
+  bool get isMine => false;
+  bool isOwnedBy(String userId) => this.userId == userId;
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    UserProfile? author;
+    final p = json['author'] is Map<String, dynamic>
+        ? json['author'] as Map<String, dynamic>
+        : json['profiles'] is Map<String, dynamic>
+            ? json['profiles'] as Map<String, dynamic>
+            : null;
+    if (p != null) {
+      author = UserProfile.fromJson({
+        'id': json['user_id'],
+        if (p['display_name'] != null) 'display_name': p['display_name'],
+        if (p['profession'] != null) 'profession': p['profession'],
+        if (p['avatar_url'] != null) 'avatar_url': p['avatar_url'],
+        if (p['role'] != null) 'role': p['role'],
+        if (p['level'] != null) 'level': p['level'],
+      });
+    }
+    return Post(
+      id: (json['id'] as String?) ?? '',
+      userId: (json['user_id'] as String?) ?? '',
+      question: (json['question'] as String?) ?? '',
+      body: (json['body'] as String?) ?? '',
+      createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+      answerCount: (json['answer_count'] as int?) ?? 0,
+      author: author,
+    );
+  }
+}
+
+/// A single answer from a real person on a community post.
+class PostAnswer {
+  const PostAnswer({
+    required this.id,
+    required this.postId,
+    required this.userId,
+    required this.answer,
+    required this.createdAt,
+    this.author,
+  });
+
+  final String id;
+  final String postId;
+  final String userId;
+  final String answer;
+  final DateTime createdAt;
+  final UserProfile? author;
+
+  factory PostAnswer.fromJson(Map<String, dynamic> json) {
+    UserProfile? author;
+    final p = json['author'] is Map<String, dynamic>
+        ? json['author'] as Map<String, dynamic>
+        : json['profiles'] is Map<String, dynamic>
+            ? json['profiles'] as Map<String, dynamic>
+            : null;
+    if (p != null) {
+      author = UserProfile.fromJson({
+        'id': json['user_id'],
+        if (p['display_name'] != null) 'display_name': p['display_name'],
+        if (p['profession'] != null) 'profession': p['profession'],
+        if (p['avatar_url'] != null) 'avatar_url': p['avatar_url'],
+        if (p['role'] != null) 'role': p['role'],
+        if (p['level'] != null) 'level': p['level'],
+      });
+    }
+    return PostAnswer(
+      id: (json['id'] as String?) ?? '',
+      postId: (json['post_id'] as String?) ?? '',
+      userId: (json['user_id'] as String?) ?? '',
+      answer: (json['answer'] as String?) ?? '',
+      createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+      author: author,
+    );
+  }
+}
+
 DateTime? _parseDateTime(Object? value) {
   if (value == null) return null;
   // Postgres serialises 'infinity' as-is; map it to a far-future sentinel

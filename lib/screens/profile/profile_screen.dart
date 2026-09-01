@@ -8,6 +8,7 @@ import '../../models/models.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/xp_bar.dart';
 import '../auth/delete_account_screen.dart';
+import '../community/community_feed_screen.dart';
 import '../focus/focus_timer_screen.dart';
 import '../study/study_stats_screen.dart';
 import '../study/study_timer_screen.dart';
@@ -520,6 +521,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const StudyStatsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _menuTile(
+                      context,
+                      Icons.forum_outlined,
+                      'Community',
+                      'Ask a question, get answers from real people',
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CommunityFeedScreen(),
                           ),
                         );
                       },
