@@ -20,32 +20,29 @@ class CommunityService {
   // ---------------------------------------------------------------------
 
   /// The community feed, newest first. Each post carries its author profile
-  /// and answer count so the feed shows "who asked" and "how many answers".
+  /// so the feed shows who asked; answer counts are loaded separately via
+  /// [answerCounts] (aggregate functions are disabled in this project's API).
   Future<List<Post>> fetchPosts() async {
     final rows = await _client
         .from('posts')
         .select('*, author:profiles(display_name, profession, avatar_url, role, level)')
         .order('created_at', ascending: false)
         .limit(100);
-
-    final counts = await _answerCounts();
-    return rows.map((r) => Post.fromJson({
-          ...r,
-          'answer_count': counts[r['id'] as String?] ?? 0,
-        })).toList();
+    return rows.map(Post.fromJson).toList();
   }
 
-  /// Answer count per post (grouped aggregate over all posts).
-  Future<Map<String, int>> _answerCounts() async {
-    final grouped = await _client
+  /// Answer count per post for the given post ids, computed client-side from
+  /// one query (PostgREST aggregates are disabled on this project).
+  Future<Map<String, int>> answerCounts(List<String> postIds) async {
+    if (postIds.isEmpty) return const {};
+    final rows = await _client
         .from('post_answers')
-        .select('post_id, count:count()');
+        .select('post_id')
+        .inFilter('post_id', postIds);
     final out = <String, int>{};
-    for (final g in grouped) {
-      final pid = g['post_id'] as String?;
-      if (pid != null) {
-        out[pid] = (g['count'] as int?) ?? 0;
-      }
+    for (final r in rows) {
+      final pid = r['post_id'] as String?;
+      if (pid != null) out[pid] = (out[pid] ?? 0) + 1;
     }
     return out;
   }
@@ -70,7 +67,7 @@ class CommunityService {
       'user_id': currentUserId,
       'question': question,
       'body': body,
-    }).select('*.author:profiles(display_name, profession, avatar_url, role, level)').single();
+    }).select('*, author:profiles(display_name, profession, avatar_url, role, level)').single();
     return Post.fromJson({...row, 'answer_count': 0});
   }
 
@@ -92,7 +89,7 @@ class CommunityService {
       'post_id': postId,
       'user_id': currentUserId,
       'answer': answer,
-    }).select('*.author:profiles(display_name, profession, avatar_url, role, level)').single();
+    }).select('*, author:profiles(display_name, profession, avatar_url, role, level)').single();
     return PostAnswer.fromJson(row);
   }
 

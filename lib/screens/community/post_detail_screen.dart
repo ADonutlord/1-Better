@@ -70,7 +70,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _stream!.listen((rows) {
       if (!mounted) return;
       setState(() => _answers = rows);
-    });
+    }, onError: (_) {});
   }
 
   Future<void> _submitAnswer() async {

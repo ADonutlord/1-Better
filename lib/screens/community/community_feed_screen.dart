@@ -17,6 +17,7 @@ class CommunityFeedScreen extends StatefulWidget {
 class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   final CommunityService _service = CommunityService.instance;
   List<Post> _posts = [];
+  Map<String, int> _counts = {};
   bool _loading = true;
   String? _error;
   Stream<List<Post>>? _stream;
@@ -40,9 +41,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     });
     try {
       final posts = await _service.fetchPosts();
+      final counts =
+          await _service.answerCounts(posts.map((p) => p.id).toList());
       if (!mounted) return;
       setState(() {
         _posts = posts;
+        _counts = counts;
         _loading = false;
       });
       _startStream();
@@ -69,8 +73,23 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       }
       final merged = byId.values.toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      setState(() => _posts = merged);
-    });
+      setState(() {
+        _posts = merged;
+      });
+      // Refresh answer counts so new answers show up without a manual pull.
+      _refreshCounts();
+    }, onError: (_) {});
+  }
+
+  Future<void> _refreshCounts() async {
+    try {
+      final counts =
+          await _service.answerCounts(_posts.map((p) => p.id).toList());
+      if (!mounted) return;
+      setState(() => _counts = counts);
+    } catch (_) {
+      // Counts are cosmetic; never break the feed over them.
+    }
   }
 
   Future<void> _openCreate() async {
@@ -134,6 +153,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         itemCount: _posts.length,
         itemBuilder: (context, i) => _PostCard(
           post: _posts[i],
+          answerCount: _counts[_posts[i].id] ?? 0,
           onTap: () => _openPost(_posts[i]),
         ),
       ),
@@ -142,9 +162,14 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 }
 
 class _PostCard extends StatelessWidget {
-  const _PostCard({required this.post, required this.onTap});
+  const _PostCard({
+    required this.post,
+    required this.answerCount,
+    required this.onTap,
+  });
 
   final Post post;
+  final int answerCount;
   final VoidCallback onTap;
 
   @override
@@ -235,8 +260,7 @@ class _PostCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Text(
-                    '${post.answerCount} '
-                    '${post.answerCount == 1 ? 'answer' : 'answers'}',
+                    '$answerCount ${answerCount == 1 ? 'answer' : 'answers'}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
