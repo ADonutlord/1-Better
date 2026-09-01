@@ -76,6 +76,18 @@ class CommunityService {
     await _client.from('posts').delete().eq('id', postId).eq('user_id', currentUserId);
   }
 
+  /// Staff-only (admin/owner) removal of any community post. Unlike
+  /// [deletePost], this is not scoped to the caller and relies on the
+  /// server-side staff delete policy.
+  Future<void> adminDeletePost(String postId) async {
+    await _client.from('posts').delete().eq('id', postId);
+  }
+
+  /// Staff-only (admin/owner) removal of any single answer.
+  Future<void> adminDeleteAnswer(String answerId) async {
+    await _client.from('post_answers').delete().eq('id', answerId);
+  }
+
   // ---------------------------------------------------------------------
   // Answers
   // ---------------------------------------------------------------------

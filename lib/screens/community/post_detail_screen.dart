@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_state.dart';
 import '../../models/models.dart';
 import '../../services/community_service.dart';
 import '../../services/supabase_service.dart';
@@ -28,6 +29,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   String get _userId => SupabaseService.instance.client.auth.currentUser!.id;
   bool get _isOwnPost => widget.post.userId == _userId;
+  bool get _isStaff {
+    final p = AppState.instance.loop?.profile;
+    return (p?.isAdmin ?? false) || (p?.isOwner ?? false);
+  }
+  bool get _canDeletePost => _isOwnPost || _isStaff;
 
   @override
   void initState() {
@@ -102,9 +108,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       appBar: AppBar(
         title: const Text('Community'),
         actions: [
-          if (_isOwnPost)
+          if (_canDeletePost)
             IconButton(
-              tooltip: 'Delete post',
+              tooltip: _isStaff && !_isOwnPost ? 'Moderate post' : 'Delete post',
               icon: const Icon(Icons.delete_outline),
               onPressed: _deletePost,
             ),
@@ -202,7 +208,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             )
                           else
                             for (final a in _answers)
-                              _AnswerTile(answer: a),
+                              _AnswerTile(
+                                answer: a,
+                                isStaff: _isStaff,
+                                onDelete: () => _deleteAnswer(a),
+                              ),
                         ],
                       ),
           ),
@@ -253,10 +263,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future<void> _deletePost() async {
+    final title = (_isStaff && !_isOwnPost)
+        ? 'Remove this post?'
+        : 'Delete this post?';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete this post?'),
+        title: Text(title),
+        content: (_isStaff && !_isOwnPost)
+            ? const Text(
+                'You are moderating as staff. The post and all its answers '
+                'will be removed for everyone.')
+            : null,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -264,14 +282,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
     try {
-      await _service.deletePost(widget.post.id);
+      if (_isStaff && !_isOwnPost) {
+        await _service.adminDeletePost(widget.post.id);
+      } else {
+        await _service.deletePost(widget.post.id);
+      }
       if (!mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
@@ -281,12 +303,49 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       );
     }
   }
+
+  Future<void> _deleteAnswer(PostAnswer answer) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove this answer?'),
+        content: Text(
+            'Remove ${answer.author?.displayName ?? 'this member'}\'s answer '
+            'for everyone?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await _service.adminDeleteAnswer(answer.id);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not remove the answer.')),
+      );
+    }
+  }
 }
 
 class _AnswerTile extends StatelessWidget {
-  const _AnswerTile({required this.answer});
+  const _AnswerTile({
+    required this.answer,
+    this.isStaff = false,
+    this.onDelete,
+  });
 
   final PostAnswer answer;
+  final bool isStaff;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -349,6 +408,21 @@ class _AnswerTile extends StatelessWidget {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
+                if (isStaff) ...[
+                  const SizedBox(width: 4),
+                  InkWell(
+                    onTap: onDelete,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 8),
