@@ -1,0 +1,163 @@
+name: Build & Publish Release
+
+# Builds every configured Flutter app (Android APK, Windows EXE, and Linux
+# bundle) and attaches all artifacts to a GitHub Release. Run it by pushing a
+# version tag like `v1.0.0` (or trigger it manually from the Actions tab) and
+# the workflow will create/update the release with fresh artifacts built from
+# the tagged code.
+
+# NOTE: This project currently has android/, windows/ and linux/ platforms.
+# To build iOS/macOS/web too, generate those platform folders with
+# `flutter create --platforms=ios,macos,web .` and add matching jobs below.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Android APK (release)
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows (release)
+        run: flutter build windows --release
+
+      - name: Zip Windows build
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* `
+            -DestinationPath one-percent-better-windows.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: one-percent-better-windows.zip
+          if-no-files-found: error
+
+  build-linux:
+    name: Build Linux bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Linux (release)
+        run: flutter build linux --release
+
+      - name: Bundle Linux build
+        shell: bash
+        run: tar -czf one-percent-better-linux.tar.gz -C build/linux/x64/release/bundle .
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: one-percent-better-linux.tar.gz
+          if-no-files-found: error
+
+  publish:
+    name: Attach to GitHub Release
+    needs: [build-android, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (for version)
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            VER=$(grep -m1 '^version:' pubspec.yaml | sed 's/version: *//' | cut -d'+' -f1)
+            echo "tag=v$VER" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stage release artifacts
+        run: |
+          VER=${{ steps.version.outputs.tag }}
+          mkdir -p release
+          mv dist/android/app-release.apk "release/one-percent-better-${VER}.apk"
+          mv dist/windows/one-percent-better-windows.zip \
+             "release/one-percent-better-${VER}-windows.zip"
+          mv dist/linux/one-percent-better-linux.tar.gz \
+             "release/one-percent-better-${VER}-linux.tar.gz"
+          ls -la release/
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          files: release/*

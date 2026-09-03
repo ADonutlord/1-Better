@@ -23,8 +23,11 @@ class CommunityAuthor {
   bool get hasAvatar => avatarUrl != null && avatarUrl!.isNotEmpty;
 
   String? get roleLabel => switch (role) {
+        'owner' => 'Owner',
+        'admin' => 'Admin',
+        'testing' => 'Tester',
+        'wanniya' => 'Wanniya',
         'helper' => 'Helper',
-        'admin' || 'owner' => 'Team',
         _ => null,
       };
 }

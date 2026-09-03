@@ -64,12 +64,30 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     _stream = _service.streamPosts();
     _stream!.listen((rows) {
       if (!mounted) return;
-      // Merge live rows with fetched ones (dedupe by id), newest first.
+      final existingById = {for (final p in _posts) p.id: p};
       final byId = <String, Post>{};
       for (final p in _posts) {
         byId[p.id] = p;
       }
+      var swappedNewPost = false;
       for (final p in rows) {
+        // Realtime payloads lack the `profiles` join. Keep the previously
+        // fetched author (name/role/avatar) when we already have it.
+        final existing = existingById[p.id];
+        if (existing != null && existing.author != null) {
+          if (p.author == null) {
+            byId[p.id] = existing;
+          } else {
+            byId[p.id] = p;
+          }
+          continue;
+        }
+        if (p.author == null && !swappedNewPost) {
+          // A brand-new post arrived over realtime without its author join;
+          // hydrate it once via the REST endpoint so the role shows.
+          swappedNewPost = true;
+          _hydrateNewPost(p);
+        }
         byId[p.id] = p;
       }
       final merged = byId.values.toList()
@@ -80,6 +98,17 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       // Refresh answer counts so new answers show up without a manual pull.
       _refreshCounts();
     }, onError: (_) {});
+  }
+
+  Future<void> _hydrateNewPost(Post p) async {
+    try {
+      final full = await _service.fetchPost(p.id);
+      if (!mounted) return;
+      setState(() {
+        final idx = _posts.indexWhere((x) => x.id == p.id);
+        if (idx != -1) _posts[idx] = full;
+      });
+    } catch (_) {}
   }
 
   Future<void> _refreshCounts() async {

@@ -76,8 +76,39 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     _stream = _service.streamAnswers(widget.post.id);
     _stream!.listen((rows) {
       if (!mounted) return;
-      setState(() => _answers = rows);
+      // Realtime payloads lack the `profiles` join, so keep the previously
+      // fetched author (name/role/avatar) where we already have it.
+      final existingById = {for (final a in _answers) a.id: a};
+      final byId = <String, PostAnswer>{};
+      for (final a in _answers) {
+        byId[a.id] = a;
+      }
+      for (final a in rows) {
+        final existing = existingById[a.id];
+        if (existing != null && existing.author != null && a.author == null) {
+          byId[a.id] = existing;
+          continue;
+        }
+        if (a.author == null) {
+          _hydrateNewAnswer(a);
+        }
+        byId[a.id] = a;
+      }
+      final merged = byId.values.toList()
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      setState(() => _answers = merged);
     }, onError: (_) {});
+  }
+
+  Future<void> _hydrateNewAnswer(PostAnswer a) async {
+    try {
+      final full = await _service.fetchAnswer(a.id);
+      if (!mounted) return;
+      setState(() {
+        final idx = _answers.indexWhere((x) => x.id == a.id);
+        if (idx != -1) _answers[idx] = full;
+      });
+    } catch (_) {}
   }
 
   Future<void> _submitAnswer() async {
@@ -163,12 +194,25 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        name,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(fontWeight: FontWeight.w700),
-                                      ),
+                                       const SizedBox(width: 10),
+                                       Column(
+                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                         children: [
+                                           Text(
+                                             name,
+                                             style: theme.textTheme.bodyMedium
+                                                 ?.copyWith(fontWeight: FontWeight.w700),
+                                           ),
+                                           if (resolved.roleLabel != null)
+                                             Text(
+                                               resolved.roleLabel!,
+                                               style: theme.textTheme.labelSmall?.copyWith(
+                                                 color: theme.colorScheme.primary,
+                                                 fontWeight: FontWeight.w600,
+                                               ),
+                                             ),
+                                         ],
+                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 12),

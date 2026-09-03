@@ -71,6 +71,17 @@ class CommunityService {
     return Post.fromJson({...row, 'answer_count': 0});
   }
 
+  /// Fetches a single post together with its author profile join. Used to
+  /// hydrate a realtime-pushed row whose payload lacked the `profiles` join.
+  Future<Post> fetchPost(String postId) async {
+    final row = await _client
+        .from('posts')
+        .select('*, author:profiles(display_name, profession, avatar_url, role, level)')
+        .eq('id', postId)
+        .single();
+    return Post.fromJson({...row, 'answer_count': 0});
+  }
+
   /// Deletes one of the caller's own posts.
   Future<void> deletePost(String postId) async {
     await _client.from('posts').delete().eq('id', postId).eq('user_id', currentUserId);
@@ -105,11 +116,24 @@ class CommunityService {
     return PostAnswer.fromJson(row);
   }
 
+  /// Fetches a single answer together with its author profile join. Used to
+  /// hydrate a realtime-pushed row whose payload lacked the `profiles` join.
+  Future<PostAnswer> fetchAnswer(String answerId) async {
+    final row = await _client
+        .from('post_answers')
+        .select('*, author:profiles(display_name, profession, avatar_url, role, level)')
+        .eq('id', answerId)
+        .single();
+    return PostAnswer.fromJson(row);
+  }
+
   // ---------------------------------------------------------------------
   // Realtime
   // ---------------------------------------------------------------------
 
   /// Live stream of new posts for the feed (top-most feed stays fresh).
+  /// Note: realtime payloads don't carry the `profiles` join, so each row's
+  /// author must be resolved client-side via [resolveAuthor].
   Stream<List<Post>> streamPosts() {
     return _client
         .from('posts')
@@ -118,6 +142,8 @@ class CommunityService {
   }
 
   /// Live stream of answers for one post's thread.
+  /// Note: realtime payloads don't carry the `profiles` join, so each row's
+  /// author must be resolved client-side via [resolveAuthor].
   Stream<List<PostAnswer>> streamAnswers(String postId) {
     return _client
         .from('post_answers')
