@@ -196,6 +196,9 @@ class _PostCard extends StatelessWidget {
                   CircleAvatar(
                     radius: 18,
                     backgroundColor: theme.colorScheme.primaryContainer,
+                    foregroundImage: resolved.hasAvatar
+                        ? NetworkImage(resolved.avatarUrl!)
+                        : null,
                     child: Text(
                       resolved.initial,
                       style: TextStyle(

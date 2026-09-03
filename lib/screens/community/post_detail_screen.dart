@@ -151,6 +151,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         radius: 18,
                                         backgroundColor:
                                             theme.colorScheme.primaryContainer,
+                                        foregroundImage: resolved.hasAvatar
+                                            ? NetworkImage(resolved.avatarUrl!)
+                                            : null,
                                         child: Text(
                                           resolved.initial,
                                           style: TextStyle(
@@ -368,6 +371,9 @@ class _AnswerTile extends StatelessWidget {
                 CircleAvatar(
                   radius: 14,
                   backgroundColor: theme.colorScheme.secondaryContainer,
+                  foregroundImage: resolved.hasAvatar
+                      ? NetworkImage(resolved.avatarUrl!)
+                      : null,
                   child: Text(
                     resolved.initial,
                     style: TextStyle(

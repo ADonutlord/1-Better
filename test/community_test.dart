@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:one_percent_better/models/models.dart';
+import 'package:one_percent_better/screens/community/community_helpers.dart';
 
 void main() {
   group('Post', () {
@@ -63,6 +64,35 @@ void main() {
       final answer = PostAnswer.fromJson({'post_id': 'p1'});
       expect(answer.postId, 'p1');
       expect(answer.answer, '');
+    });
+  });
+
+  group('resolveAuthor', () {
+    test('uses embedded profile including avatar', () {
+      final profile = UserProfile.fromJson(const {
+        'id': 'u1',
+        'display_name': 'Ada',
+        'role': 'helper',
+        'level': 3,
+        'total_xp': 0,
+        'current_streak': 0,
+        'longest_streak': 0,
+        'avatar_url': 'https://example.com/ada.png',
+      });
+      final resolved = resolveAuthor(userId: 'u1', embeddedAuthor: profile);
+
+      expect(resolved.name, 'Ada');
+      expect(resolved.roleLabel, 'Helper');
+      expect(resolved.hasAvatar, isTrue);
+      expect(resolved.avatarUrl, 'https://example.com/ada.png');
+      expect(resolved.initial, 'A');
+    });
+
+    test('falls back to Community member without an embedded profile', () {
+      final resolved = resolveAuthor(userId: 'someone-else');
+      expect(resolved.name, 'Community member');
+      expect(resolved.hasAvatar, isFalse);
+      expect(resolved.roleLabel, isNull);
     });
   });
 }
