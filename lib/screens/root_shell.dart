@@ -46,6 +46,7 @@ class _RootShellState extends State<RootShell> {
     return ListenableBuilder(
       listenable: Listenable.merge([_app, ThemeController.instance]),
       builder: (context, _) {
+        final theme = Theme.of(context);
         final liquid = ThemeController.instance.liquid;
         final blur = ThemeController.instance.blur;
         final tree = TreeGrowthIndicator(
@@ -53,21 +54,28 @@ class _RootShellState extends State<RootShell> {
           background: true,
           backgroundAnchor: 0.1,
         );
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            Transform.translate(
-              offset: const Offset(24, 0),
-              child: tree,
-            ),
-            if (liquid && blur)
-              ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-                  child: const SizedBox.expand(),
-                ),
+        // Paint a theme-adaptive full background behind the tree. Without this
+        // the transparent outer scaffold would show the black window behind it
+        // in every gap (most visible in light mode), because the tree painter
+        // only draws the tree, not a background fill.
+        return ColoredBox(
+          color: theme.scaffoldBackgroundColor,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Transform.translate(
+                offset: const Offset(24, 0),
+                child: tree,
               ),
-          ],
+              if (liquid && blur)
+                ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+            ],
+          ),
         );
       },
     );
