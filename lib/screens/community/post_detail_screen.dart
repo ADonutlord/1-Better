@@ -4,6 +4,7 @@ import '../../core/app_state.dart';
 import '../../models/models.dart';
 import '../../services/community_service.dart';
 import '../../services/supabase_service.dart';
+import 'community_helpers.dart';
 
 /// A single post's thread: the question and every real-person answer, with a
 /// composer at the bottom. New answers stream in live.
@@ -99,10 +100,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final author = widget.post.author;
-    final name = (author?.displayName.isNotEmpty ?? false)
-        ? author!.displayName
-        : 'Community member';
+    final resolved =
+        resolveAuthor(userId: widget.post.userId, embeddedAuthor: widget.post.author);
+    final name = resolved.name;
 
     return Scaffold(
       appBar: AppBar(
@@ -152,7 +152,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         backgroundColor:
                                             theme.colorScheme.primaryContainer,
                                         child: Text(
-                                          name.isEmpty ? '?' : name[0].toUpperCase(),
+                                          resolved.initial,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w700,
                                             color: theme.colorScheme
@@ -305,12 +305,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future<void> _deleteAnswer(PostAnswer answer) async {
+    final authorName =
+        resolveAuthor(userId: answer.userId, embeddedAuthor: answer.author).name;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Remove this answer?'),
-        content: Text(
-            'Remove ${answer.author?.displayName ?? 'this member'}\'s answer '
+        content: Text('Remove $authorName\'s answer '
             'for everyone?'),
         actions: [
           TextButton(
@@ -350,15 +351,10 @@ class _AnswerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final author = answer.author;
-    final name = (author?.displayName.isNotEmpty ?? false)
-        ? author!.displayName
-        : 'Community member';
-    final roleLabel = switch (author?.role) {
-      'helper' => 'Helper',
-      'admin' || 'owner' => 'Team',
-      _ => null,
-    };
+    final resolved =
+        resolveAuthor(userId: answer.userId, embeddedAuthor: answer.author);
+    final name = resolved.name;
+    final roleLabel = resolved.roleLabel;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -373,7 +369,7 @@ class _AnswerTile extends StatelessWidget {
                   radius: 14,
                   backgroundColor: theme.colorScheme.secondaryContainer,
                   child: Text(
-                    name.isEmpty ? '?' : name[0].toUpperCase(),
+                    resolved.initial,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,

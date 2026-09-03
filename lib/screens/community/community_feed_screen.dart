@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
 import '../../services/community_service.dart';
+import 'community_helpers.dart';
 import 'create_post_screen.dart';
 import 'post_detail_screen.dart';
 
@@ -175,15 +176,10 @@ class _PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final author = post.author;
-    final name = (author?.displayName.isNotEmpty ?? false)
-        ? author!.displayName
-        : 'Community member';
-    final roleLabel = switch (author?.role) {
-      'helper' => 'Helper',
-      'admin' || 'owner' => 'Team',
-      _ => null,
-    };
+    final resolved =
+        resolveAuthor(userId: post.userId, embeddedAuthor: post.author);
+    final name = resolved.name;
+    final roleLabel = resolved.roleLabel;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -201,7 +197,7 @@ class _PostCard extends StatelessWidget {
                     radius: 18,
                     backgroundColor: theme.colorScheme.primaryContainer,
                     child: Text(
-                      name.isEmpty ? '?' : name[0].toUpperCase(),
+                      resolved.initial,
                       style: TextStyle(
                         color: theme.colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.w700,
