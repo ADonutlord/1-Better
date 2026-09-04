@@ -33,7 +33,9 @@ class CommunityAuthor {
 }
 
 /// Builds the display name/role/avatar for an author row, preferring the
-/// embedded profile and falling back to the current user's cached profile.
+/// embedded profile, then the shared author cache (populated via
+/// [CommunityService.fetchAuthors] for realtime rows), then the current user's
+/// cached profile for their own rows.
 CommunityAuthor resolveAuthor({
   required String userId,
   UserProfile? embeddedAuthor,
@@ -45,8 +47,17 @@ CommunityAuthor resolveAuthor({
       avatarUrl: embeddedAuthor.avatarUrl,
     );
   }
-  // If the row is the signed-in user's own, use the cached profile so their
-  // display name and picture show even on realtime rows that lack the join.
+  // Realtime rows lack the join; check the shared author cache first.
+  final cached = AppState.instance.authors[userId];
+  if (cached != null && cached.displayName.isNotEmpty) {
+    return CommunityAuthor(
+      name: cached.displayName,
+      role: cached.role,
+      avatarUrl: cached.avatarUrl,
+    );
+  }
+  // Otherwise, for the signed-in user's own rows use their cached profile so
+  // their display name and picture show even on realtime rows.
   final profile = AppState.instance.loop?.profile;
   if (profile != null && profile.id == userId) {
     return CommunityAuthor(

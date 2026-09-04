@@ -44,6 +44,9 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       final posts = await _service.fetchPosts();
       final counts =
           await _service.answerCounts(posts.map((p) => p.id).toList());
+      // Populate the shared author cache so realtime rows (which lack the
+      // join) can still resolve display name, role and picture for everyone.
+      await _service.fetchAuthors(posts.map((p) => p.userId).toList());
       if (!mounted) return;
       setState(() {
         _posts = posts;
@@ -69,27 +72,25 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       for (final p in _posts) {
         byId[p.id] = p;
       }
-      var swappedNewPost = false;
+      final missingAuthors = <String>{};
       for (final p in rows) {
-        // Realtime payloads lack the `profiles` join. Keep the previously
-        // fetched author (name/role/avatar) when we already have it.
+        // Realtime payloads lack the `profiles` join. When we already have a
+        // fetched copy with the author info, keep it.
         final existing = existingById[p.id];
         if (existing != null && existing.author != null) {
-          if (p.author == null) {
-            byId[p.id] = existing;
-          } else {
-            byId[p.id] = p;
-          }
+          byId[p.id] = existing;
           continue;
         }
-        if (p.author == null && !swappedNewPost) {
-          // A brand-new post arrived over realtime without its author join;
-          // hydrate it once via the REST endpoint so the role shows.
-          swappedNewPost = true;
-          _hydrateNewPost(p);
+        // A brand-new post arrived without its author join; queue its author
+        // id so we can resolve the display name/role/picture from profiles.
+        if (p.author == null) {
+          missingAuthors.add(p.userId);
         }
         byId[p.id] = p;
       }
+      // Resolve any unknown authors into the cache (name/role/avatar), then
+      // rebuild so [resolveAuthor] picks them up.
+      _resolveAuthors(missingAuthors);
       final merged = byId.values.toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
       setState(() {
@@ -100,15 +101,15 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     }, onError: (_) {});
   }
 
-  Future<void> _hydrateNewPost(Post p) async {
+  Future<void> _resolveAuthors(Set<String> userIds) async {
+    if (userIds.isEmpty) return;
     try {
-      final full = await _service.fetchPost(p.id);
+      await _service.fetchAuthors(userIds.toList());
       if (!mounted) return;
-      setState(() {
-        final idx = _posts.indexWhere((x) => x.id == p.id);
-        if (idx != -1) _posts[idx] = full;
-      });
-    } catch (_) {}
+      setState(() {});
+    } catch (_) {
+      // Author resolution is cosmetic; never break the feed over it.
+    }
   }
 
   Future<void> _refreshCounts() async {

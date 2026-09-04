@@ -49,54 +49,68 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ask the community'),
-        actions: [
-          TextButton(
-            onPressed: _canSubmit ? _submit : null,
-            child: _posting
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Post'),
-          ),
-        ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            'Ask a question and real people in the community will answer it.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Text(
+                    'Ask a question and real people in the community will answer it.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _question,
+                    maxLength: 2000,
+                    decoration: const InputDecoration(
+                      labelText: 'Question',
+                      hintText: 'e.g. How do I beat procrastination?',
+                      border: OutlineInputBorder(),
+                    ),
+                    textCapitalization: TextCapitalization.sentences,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _body,
+                    maxLines: 5,
+                    maxLength: 4000,
+                    decoration: const InputDecoration(
+                      labelText: 'Details (optional)',
+                      hintText: 'Add more context so people can help you better...',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _question,
-            maxLength: 2000,
-            decoration: const InputDecoration(
-              labelText: 'Question',
-              hintText: 'e.g. How do I beat procrastination?',
-              border: OutlineInputBorder(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: FilledButton.icon(
+                  onPressed: _canSubmit ? _submit : null,
+                  icon: _posting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.send),
+                  label: Text(_posting ? 'Posting...' : 'Post'),
+                ),
+              ),
             ),
-            textCapitalization: TextCapitalization.sentences,
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _body,
-            maxLines: 5,
-            maxLength: 4000,
-            decoration: const InputDecoration(
-              labelText: 'Details (optional)',
-              hintText: 'Add more context so people can help you better...',
-              border: OutlineInputBorder(),
-              alignLabelWithHint: true,
-            ),
-            textCapitalization: TextCapitalization.sentences,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

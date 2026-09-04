@@ -16,6 +16,11 @@ class AppState extends ChangeNotifier {
   bool loadingLoop = false;
   String? error;
 
+  /// Cache of community author profiles keyed by user id. Realtime rows don't
+  /// carry the embedded profile join, so the community screens resolve authors
+  /// through this cache (refreshed by [CommunityService.fetchAuthors]).
+  Map<String, UserProfile> authors = {};
+
   bool get signedIn => user != null;
 
   void refreshUser() {
@@ -58,6 +63,7 @@ class AppState extends ChangeNotifier {
         loadDailyLoop();
       } else if (data.event == AuthChangeEvent.signedOut) {
         _loop = null;
+        authors = {};
         notifyListeners();
       }
     });

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:one_percent_better/core/app_state.dart';
 import 'package:one_percent_better/models/models.dart';
 import 'package:one_percent_better/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -89,14 +90,44 @@ class CommunityService {
 
   /// Staff-only (admin/owner) removal of any community post. Unlike
   /// [deletePost], this is not scoped to the caller and relies on the
-  /// server-side staff delete policy.
-  Future<void> adminDeletePost(String postId) async {
+  /// server-side staff delete policy. [reason] is mandatory and recorded in the
+  /// moderation log as an audit trail.
+  Future<void> adminDeletePost(String postId, {required String ownerId, required String reason}) async {
+    await _logModeration(
+      targetType: 'post',
+      targetId: postId,
+      ownerId: ownerId,
+      reason: reason,
+    );
     await _client.from('posts').delete().eq('id', postId);
   }
 
-  /// Staff-only (admin/owner) removal of any single answer.
-  Future<void> adminDeleteAnswer(String answerId) async {
+  /// Staff-only (admin/owner) removal of any single answer. [reason] is
+  /// mandatory and recorded in the moderation log as an audit trail.
+  Future<void> adminDeleteAnswer(String answerId, {required String ownerId, required String reason}) async {
+    await _logModeration(
+      targetType: 'answer',
+      targetId: answerId,
+      ownerId: ownerId,
+      reason: reason,
+    );
     await _client.from('post_answers').delete().eq('id', answerId);
+  }
+
+  /// Records a staff moderation action with its reason.
+  Future<void> _logModeration({
+    required String targetType,
+    required String targetId,
+    required String ownerId,
+    required String reason,
+  }) async {
+    await _client.from('moderation_logs').insert({
+      'moderated_by': currentUserId,
+      'target_type': targetType,
+      'target_id': targetId,
+      'target_owner': ownerId,
+      'reason': reason,
+    });
   }
 
   // ---------------------------------------------------------------------
@@ -125,6 +156,31 @@ class CommunityService {
         .eq('id', answerId)
         .single();
     return PostAnswer.fromJson(row);
+  }
+
+  /// Resolves the author profiles for a set of user ids in one query. Realtime
+  /// rows never carry the embedded join, so the feed/threads look these up by
+  /// author id to reliably show display name, role and picture on every device.
+  Future<Map<String, UserProfile>> fetchAuthors(List<String> userIds) async {
+    final ids = userIds.where((id) => id.isNotEmpty).toSet().toList();
+    if (ids.isEmpty) return const {};
+    final cached = AppState.instance.authors;
+    final missing = ids.where((id) => !cached.containsKey(id)).toList();
+    final result = <String, UserProfile>{...cached};
+    if (missing.isNotEmpty) {
+      final rows = await _client
+          .from('profiles')
+          .select(
+              'id, display_name, role, profession, avatar_url, level, total_xp, current_streak, longest_streak')
+          .inFilter('id', missing);
+      for (final r in rows) {
+        final p = UserProfile.fromJson(r);
+        final id = p.id.isNotEmpty ? p.id : (r['id'] as String? ?? '');
+        if (id.isNotEmpty) result[id] = p;
+      }
+      AppState.instance.authors = result;
+    }
+    return result;
   }
 
   // ---------------------------------------------------------------------

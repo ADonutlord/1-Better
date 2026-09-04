@@ -57,6 +57,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     });
     try {
       final answers = await _service.fetchAnswers(widget.post.id);
+      // Populate the shared author cache for the answers so realtime rows
+      // (which lack the join) resolve display name/role/picture too.
+      await _service.fetchAuthors(answers.map((a) => a.userId).toList());
       if (!mounted) return;
       setState(() {
         _answers = answers;
@@ -83,6 +86,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       for (final a in _answers) {
         byId[a.id] = a;
       }
+      final missingAuthors = <String>{};
       for (final a in rows) {
         final existing = existingById[a.id];
         if (existing != null && existing.author != null && a.author == null) {
@@ -90,25 +94,26 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           continue;
         }
         if (a.author == null) {
-          _hydrateNewAnswer(a);
+          missingAuthors.add(a.userId);
         }
         byId[a.id] = a;
       }
+      _resolveAuthors(missingAuthors);
       final merged = byId.values.toList()
         ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
       setState(() => _answers = merged);
     }, onError: (_) {});
   }
 
-  Future<void> _hydrateNewAnswer(PostAnswer a) async {
+  Future<void> _resolveAuthors(Set<String> userIds) async {
+    if (userIds.isEmpty) return;
     try {
-      final full = await _service.fetchAnswer(a.id);
+      await _service.fetchAuthors(userIds.toList());
       if (!mounted) return;
-      setState(() {
-        final idx = _answers.indexWhere((x) => x.id == a.id);
-        if (idx != -1) _answers[idx] = full;
-      });
-    } catch (_) {}
+      setState(() {});
+    } catch (_) {
+      // Author resolution is cosmetic; never break the thread over it.
+    }
   }
 
   Future<void> _submitAnswer() async {
@@ -309,35 +314,102 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  Future<void> _deletePost() async {
-    final title = (_isStaff && !_isOwnPost)
-        ? 'Remove this post?'
-        : 'Delete this post?';
-    final confirmed = await showDialog<bool>(
+  /// Shows a confirmation dialog. When [requireReason] is true, a reason text
+  /// field is shown and the action button stays disabled until it's non-empty.
+  Future<String?> _confirmAction({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    bool destructive = false,
+    bool requireReason = false,
+    String reasonLabel = 'Reason (required)',
+  }) async {
+    final controller = TextEditingController();
+    final result = await showDialog<String?>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: (_isStaff && !_isOwnPost)
-            ? const Text(
-                'You are moderating as staff. The post and all its answers '
-                'will be removed for everyone.')
-            : null,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final reasonOk = !requireReason ||
+                controller.text.trim().isNotEmpty;
+            return AlertDialog(
+              title: Text(title),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(body),
+                  if (requireReason) ...[
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      maxLines: 3,
+                      maxLength: 1000,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: InputDecoration(
+                        labelText: reasonLabel,
+                        errorText: reasonOk
+                            ? null
+                            : 'A reason is required',
+                        border: const OutlineInputBorder(),
+                        alignLabelWithHint: true,
+                      ),
+                      onChanged: (_) => setDialogState(() {}),
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  style: destructive
+                      ? FilledButton.styleFrom(
+                          backgroundColor: theme.colorScheme.error,
+                          foregroundColor: theme.colorScheme.onError,
+                        )
+                      : null,
+                  onPressed: reasonOk
+                      ? () => Navigator.pop(ctx, controller.text.trim())
+                      : null,
+                  child: Text(confirmLabel),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
-    if (confirmed != true) return;
+    controller.dispose();
+    return result;
+  }
+
+  Future<void> _deletePost() async {
+    final isStaffModeration = _isStaff && !_isOwnPost;
+    final title = isStaffModeration ? 'Remove this post?' : 'Delete this post?';
+    final confirmed = await _confirmAction(
+      title: title,
+      body: isStaffModeration
+          ? 'You are moderating as staff. The post and all its answers will '
+              'be removed for everyone.'
+          : 'This permanently deletes your post and all its answers for '
+              'everyone. This cannot be undone.',
+      confirmLabel: isStaffModeration ? 'Remove' : 'Delete',
+      destructive: true,
+      requireReason: isStaffModeration,
+    );
+    if (confirmed == null) return;
     try {
-      if (_isStaff && !_isOwnPost) {
-        await _service.adminDeletePost(widget.post.id);
+      if (isStaffModeration) {
+        await _service.adminDeletePost(
+          widget.post.id,
+          ownerId: widget.post.userId,
+          reason: confirmed,
+        );
       } else {
         await _service.deletePost(widget.post.id);
       }
@@ -354,27 +426,20 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Future<void> _deleteAnswer(PostAnswer answer) async {
     final authorName =
         resolveAuthor(userId: answer.userId, embeddedAuthor: answer.author).name;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove this answer?'),
-        content: Text('Remove $authorName\'s answer '
-            'for everyone?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
+    final confirmed = await _confirmAction(
+      title: 'Remove this answer?',
+      body: "Remove $authorName's answer for everyone?",
+      confirmLabel: 'Remove',
+      destructive: true,
+      requireReason: true,
     );
-    if (confirmed != true) return;
+    if (confirmed == null) return;
     try {
-      await _service.adminDeleteAnswer(answer.id);
+      await _service.adminDeleteAnswer(
+        answer.id,
+        ownerId: answer.userId,
+        reason: confirmed,
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
