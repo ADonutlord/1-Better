@@ -110,6 +110,16 @@ class NotificationService {
         // Opening the notification / alarm just brings the app forward.
       },
     );
+
+    // Reading launch details keeps the FFI launch-details struct in the
+    // full-AOT image; without this call site the tree-shaker drops it and the
+    // Windows release AOT snapshotter crashes (see flutter_local_notifications
+    // #2615). The result is discarded for now, but the call is required.
+    try {
+      await _plugin.getNotificationAppLaunchDetails();
+    } catch (_) {
+      // Non-fatal: launch details are optional on every platform.
+    }
     _initialized = true;
   }
 
