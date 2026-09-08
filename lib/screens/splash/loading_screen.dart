@@ -270,7 +270,7 @@ class _BetaNoticeDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: SelectableText(
-                'onepercentbettercustomersupport@gmail.com',
+                '1percentbettercustomersupport@gmail.com',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
