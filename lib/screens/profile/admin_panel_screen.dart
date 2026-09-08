@@ -15,7 +15,7 @@ class AdminPanelScreen extends StatefulWidget {
 
 class _AdminPanelScreenState extends State<AdminPanelScreen> {
   final _email = TextEditingController();
-  String? _role = 'user';
+  String? _role = 'member';
   bool _saving = false;
   Map<String, dynamic>? _result;
 
@@ -60,10 +60,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   List<String> get _roleOptions =>
-      ['user', 'helper', 'admin', if (_isOwner) 'testing', if (_isOwner) 'wanniya', if (_isOwner) 'owner'];
+      ['member', 'helper', 'admin', if (_isOwner) 'testing', if (_isOwner) 'wanniya', if (_isOwner) 'owner'];
 
   String _roleLabel(String role) => switch (role) {
-        'user' => 'Member',
+        'member' => 'Member',
         'helper' => 'Helper',
         'admin' => 'Admin',
         'testing' => 'Tester',
@@ -257,7 +257,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                           DropdownMenuItem(value: r, child: Text(_roleLabel(r))),
                       ],
                       onChanged: (value) =>
-                          setState(() => _role = value ?? 'user'),
+                          setState(() => _role = value ?? 'member'),
                     ),
                     if (!_isOwner) ...[
                       const SizedBox(height: 10),

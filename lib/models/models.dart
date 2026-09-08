@@ -54,7 +54,7 @@ class UserProfile {
     return UserProfile(
       id: json['id'] as String,
       displayName: (json['display_name'] as String?) ?? 'Friend',
-      role: (json['role'] as String?) ?? 'user',
+      role: (json['role'] as String?) ?? 'member',
       level: (json['level'] as int?) ?? 1,
       totalXp: (json['total_xp'] as int?) ?? 0,
       currentStreak: (json['current_streak'] as int?) ?? 0,
@@ -448,7 +448,7 @@ class DailyLoop {
       profile: profileJson is Map<String, dynamic>
           ? UserProfile.fromJson(profileJson)
           : const UserProfile(
-              id: '', displayName: '', role: 'user', level: 1, totalXp: 0,
+              id: '', displayName: '', role: 'member', level: 1, totalXp: 0,
               currentStreak: 0, longestStreak: 0),
       dailyProgress: progressJson is Map<String, dynamic>
           ? DailyProgress.fromJson(progressJson)

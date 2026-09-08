@@ -287,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const UserProfile(
               id: '',
               displayName: '',
-              role: 'user',
+              role: 'member',
               level: 1,
               totalXp: 0,
               currentStreak: 0,

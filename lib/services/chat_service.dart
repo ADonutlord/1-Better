@@ -283,7 +283,7 @@ class ChatService {
           return UserProfile(
             id: (p['id'] as String?) ?? '',
             displayName: (p['display_name'] as String?) ?? 'Blocked user',
-            role: 'user',
+            role: 'member',
             level: 1,
             totalXp: 0,
             currentStreak: 0,
