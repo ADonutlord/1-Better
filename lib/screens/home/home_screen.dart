@@ -631,7 +631,9 @@ class _CompletionDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final xp = result['xp_earned'] ?? 0;
+    final bonus = result['streak_bonus'] ?? 0;
     final streak = result['current_streak'] ?? 0;
+    final base = (xp as int) - (bonus as int);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       content: Column(
@@ -643,6 +645,10 @@ class _CompletionDialog extends StatelessWidget {
               style: theme.textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
+          Text('+$base XP + $bonus streak bonus 🔥',
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 4),
           Text('🔥 $streak day streak',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w700)),
