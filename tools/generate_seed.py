@@ -11,9 +11,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# mood tag vocabulary: great, good, okay, low, stressed
+# mood tag vocabulary: excited, happy, enthusiastic, elated, energetic,
+#                       calm, content, relaxed, peaceful, serene,
+#                       angry, anxious, stressed, irritable, frustrated,
+#                       sad, bored, tired, depressed, gloomy,
+#                       confused, nostalgic, curious, indifferent, surprised
 # situation vocabulary: school, work, family, friends, relationships, money,
 #                       loneliness, stress, motivation, other
+
+# Legacy → new tag remap (old 5-mood set), applied in act() so the generated
+# seed stays in sync with the expanded mood vocabulary.
+_LEGACY_MOODS = {
+    "great": "excited",
+    "good": "happy",
+    "okay": "confused",
+    "low": "sad",
+    "stressed": "stressed",
+}
 
 
 def act(title, desc, cat, sub, mins, diff, energy, moods, situ, xp=None):
@@ -27,7 +41,7 @@ def act(title, desc, cat, sub, mins, diff, energy, moods, situ, xp=None):
         "estimated_minutes": mins,
         "difficulty": diff,
         "required_energy": energy,
-        "mood_tags": moods,
+        "mood_tags": [_LEGACY_MOODS.get(m, m) for m in moods],
         "situation_tags": situ,
         "base_xp": xp,
     }

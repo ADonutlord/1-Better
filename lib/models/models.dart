@@ -154,7 +154,7 @@ class MoodCheckin {
 
   factory MoodCheckin.fromJson(Map<String, dynamic> json) => MoodCheckin(
         id: (json['id'] as String?) ?? '',
-        mood: (json['mood'] as String?) ?? 'okay',
+        mood: (json['mood'] as String?) ?? 'calm',
         situation: _stringList(json['situation']),
         createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
       );

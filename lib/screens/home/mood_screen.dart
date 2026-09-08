@@ -70,19 +70,28 @@ class _MoodScreenState extends State<MoodScreen> {
                       ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 24),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    for (final mood in Moods.keys)
-                      _MoodTile(
-                        mood: mood,
-                        selected: _mood == mood,
-                        onTap: () => setState(() => _mood = mood),
-                      ),
-                  ],
-                ),
+                for (final group in Moods.groups.entries) ...[
+                  Text(
+                    Moods.groupLabels[group.key]!,
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      for (final mood in group.value)
+                        _MoodTile(
+                          mood: mood,
+                          selected: _mood == mood,
+                          onTap: () => setState(() => _mood = mood),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 const SizedBox(height: 28),
                 Text('What\'s affecting you? (optional)',
                     style: theme.textTheme.titleMedium

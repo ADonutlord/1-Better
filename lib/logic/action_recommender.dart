@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:one_percent_better/core/constants/app_constants.dart';
 import 'package:one_percent_better/models/models.dart';
 
 /// The 1% Better personalization algorithm.
@@ -102,7 +103,8 @@ class ActionRecommender {
       score = 0.4;
     }
 
-    if (mood == 'stressed' || mood == 'low') {
+    // Negative moods lean toward soothing, low-effort actions.
+    if (Moods.isNegative(mood)) {
       const soothing = {
         'breathing', 'grounding', 'relaxation', 'self-soothing', 'rest',
       };
@@ -114,7 +116,8 @@ class ActionRecommender {
       }
     }
 
-    if (mood == 'great' || mood == 'good') {
+    // Positive moods open the door to social, productive and physical picks.
+    if (Moods.isPositive(mood)) {
       if (action.category == 'social' ||
           action.category == 'productivity' ||
           action.category == 'physical' ||
@@ -123,7 +126,8 @@ class ActionRecommender {
       }
     }
 
-    if (mood == 'okay' && score == 0) {
+    // Neutral/mixed moods keep a mild baseline so something is always offered.
+    if (Moods.groupOf(mood) == Moods.neutral && score == 0) {
       score = 0.3;
     }
     return score.clamp(0.0, 1.0);
@@ -212,13 +216,13 @@ class ActionRecommender {
   // Helpers
   // -------------------------------------------------------------------------
 
-  static List<String> _adjacentMoods(String mood) => switch (mood) {
-        'stressed' => ['low', 'okay'],
-        'low' => ['stressed', 'okay'],
-        'great' => ['good'],
-        'good' => ['great', 'okay'],
-        _ => ['good', 'low'],
-      };
+  /// Moods in the same group, or any mood with the same polarity, count as
+  /// adjacent (used as a soft match instead of a hard 1.0).
+  static List<String> _adjacentMoods(String mood) {
+    final group = Moods.groupOf(mood);
+    if (group == null) return const [];
+    return Moods.groups[group]!.where((m) => m != mood).toList();
+  }
 
   AppAction _weightedPick(List<_Scored> top) {
     if (top.length == 1) return top.first.action;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_state.dart';
+import '../../core/constants/app_constants.dart';
 import '../../models/models.dart';
 import '../../services/action_service.dart';
 import '../../widgets/action_card.dart';
@@ -317,10 +318,8 @@ class _MoodCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  for (final key in [
-                    'great', 'good', 'okay', 'low', 'stressed',
-                  ])
-                    _emoji(key, mood?.mood == key, theme),
+                  for (final group in Moods.groups.values)
+                    _emoji(group.first, mood?.mood == group.first, theme),
                 ],
               ),
             ],
@@ -659,19 +658,7 @@ class _CompletionDialog extends StatelessWidget {
 class MoodEmoji {
   MoodEmoji._();
 
-  static String forKey(String key) => switch (key) {
-        'great' => '😄',
-        'good' => '🙂',
-        'okay' => '😐',
-        'low' => '😔',
-        _ => '😣',
-      };
+  static String forKey(String key) => Moods.emojiFor(key);
 
-  static String label(String key) => switch (key) {
-        'great' => 'Great',
-        'good' => 'Good',
-        'okay' => 'Okay',
-        'low' => 'Low',
-        _ => 'Stressed',
-      };
+  static String label(String key) => Moods.labelFor(key);
 }

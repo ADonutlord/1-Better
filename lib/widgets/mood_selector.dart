@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:one_percent_better/core/constants/app_constants.dart';
 
-/// The "How are you feeling?" selector: 5 tappable moods.
+/// The "How are you feeling?" selector: 25 tappable moods grouped by energy
+/// and valence.
 class MoodSelector extends StatelessWidget {
   const MoodSelector({
     super.key,
     this.onSelected,
     this.selected,
+    this.compact = false,
   });
 
   final ValueChanged<String>? onSelected;
   final String? selected;
 
+  /// [compact] renders just one representative mood per group (for tight
+  /// spaces); otherwise the full grouped set is shown.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      alignment: WrapAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final mood in Moods.keys)
-          _MoodButton(
-            mood: mood,
-            selected: selected == mood,
-            onTap: () => onSelected?.call(mood),
+        for (final group in Moods.groups.entries) ...[
+          if (!compact) ...[
+            Text(Moods.groupLabels[group.key]!),
+            const SizedBox(height: 8),
+          ],
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            alignment: WrapAlignment.center,
+            children: [
+              for (final mood in compact ? group.value.take(1) : group.value)
+                _MoodButton(
+                  mood: mood,
+                  selected: selected == mood,
+                  onTap: () => onSelected?.call(mood),
+                ),
+            ],
           ),
+          if (!compact) const SizedBox(height: 16),
+        ],
       ],
     );
   }

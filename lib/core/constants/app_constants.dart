@@ -1,33 +1,121 @@
-/// Moods the user can check in with, plus their emoji.
+/// Moods the user can check in with, grouped by energy and valence, plus their
+/// emoji. There are 25 moods across 5 groups.
 class Moods {
   Moods._();
 
+  static const String positiveHigh = 'positive_high';
+  static const String positiveLow = 'positive_low';
+  static const String negativeHigh = 'negative_high';
+  static const String negativeLow = 'negative_low';
+  static const String neutral = 'neutral';
+
+  /// Moods grouped by group key, in display order.
+  static const Map<String, List<String>> groups = {
+    positiveHigh: ['excited', 'happy', 'enthusiastic', 'elated', 'energetic'],
+    positiveLow: ['calm', 'content', 'relaxed', 'peaceful', 'serene'],
+    negativeHigh: ['angry', 'anxious', 'stressed', 'irritable', 'frustrated'],
+    negativeLow: ['sad', 'bored', 'tired', 'depressed', 'gloomy'],
+    neutral: ['confused', 'nostalgic', 'curious', 'indifferent', 'surprised'],
+  };
+
+  static const Map<String, String> groupLabels = {
+    positiveHigh: 'Positive · high energy',
+    positiveLow: 'Positive · low energy',
+    negativeHigh: 'Negative · high energy',
+    negativeLow: 'Negative · low energy',
+    neutral: 'Neutral / mixed',
+  };
+
   static const List<String> keys = [
-    'great',
-    'good',
-    'okay',
-    'low',
-    'stressed',
+    'excited', 'happy', 'enthusiastic', 'elated', 'energetic',
+    'calm', 'content', 'relaxed', 'peaceful', 'serene',
+    'angry', 'anxious', 'stressed', 'irritable', 'frustrated',
+    'sad', 'bored', 'tired', 'depressed', 'gloomy',
+    'confused', 'nostalgic', 'curious', 'indifferent', 'surprised',
   ];
 
   static const Map<String, String> labels = {
-    'great': 'Great',
-    'good': 'Good',
-    'okay': 'Okay',
-    'low': 'Low',
+    'excited': 'Excited',
+    'happy': 'Happy',
+    'enthusiastic': 'Enthusiastic',
+    'elated': 'Elated',
+    'energetic': 'Energetic',
+    'calm': 'Calm',
+    'content': 'Content',
+    'relaxed': 'Relaxed',
+    'peaceful': 'Peaceful',
+    'serene': 'Serene',
+    'angry': 'Angry',
+    'anxious': 'Anxious',
     'stressed': 'Stressed',
+    'irritable': 'Irritable',
+    'frustrated': 'Frustrated',
+    'sad': 'Sad',
+    'bored': 'Bored',
+    'tired': 'Tired',
+    'depressed': 'Depressed',
+    'gloomy': 'Gloomy',
+    'confused': 'Confused',
+    'nostalgic': 'Nostalgic',
+    'curious': 'Curious',
+    'indifferent': 'Indifferent',
+    'surprised': 'Surprised',
   };
 
   static const Map<String, String> emoji = {
-    'great': '😄',
-    'good': '🙂',
-    'okay': '😐',
-    'low': '😔',
+    'excited': '😆',
+    'happy': '😀',
+    'enthusiastic': '🤩',
+    'elated': '😁',
+    'energetic': '⚡',
+    'calm': '😌',
+    'content': '🙂',
+    'relaxed': '😎',
+    'peaceful': '🕊️',
+    'serene': '🌿',
+    'angry': '😠',
+    'anxious': '😰',
     'stressed': '😣',
+    'irritable': '😤',
+    'frustrated': '😩',
+    'sad': '😢',
+    'bored': '🥱',
+    'tired': '😴',
+    'depressed': '😞',
+    'gloomy': '🌧️',
+    'confused': '😕',
+    'nostalgic': '🥲',
+    'curious': '🤔',
+    'indifferent': '😐',
+    'surprised': '😲',
   };
 
   static String emojiFor(String? mood) => emoji[mood] ?? '🌱';
-  static String labelFor(String? mood) => labels[mood] ?? 'Okay';
+  static String labelFor(String? mood) => labels[mood] ?? 'Calm';
+
+  /// The group a mood belongs to, or null if unknown.
+  static String? groupOf(String? mood) {
+    if (mood == null) return null;
+    for (final entry in groups.entries) {
+      if (entry.value.contains(mood)) return entry.key;
+    }
+    return null;
+  }
+
+  static bool isPositive(String? mood) {
+    final g = groupOf(mood);
+    return g == positiveHigh || g == positiveLow;
+  }
+
+  static bool isNegative(String? mood) {
+    final g = groupOf(mood);
+    return g == negativeHigh || g == negativeLow;
+  }
+
+  static bool isHighEnergy(String? mood) {
+    final g = groupOf(mood);
+    return g == positiveHigh || g == negativeHigh;
+  }
 }
 
 /// Situations a user can optionally select.
