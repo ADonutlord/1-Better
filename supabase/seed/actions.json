@@ -2618,5 +2618,404 @@
       "loneliness"
     ],
     "base_xp": 10
+  },
+  {
+    "title": "Box Breathing",
+    "description": "Breathe in for 4 counts, hold for 4, out for 4, hold for 4. Repeat for 2 minutes.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "5-4-3-2-1 Grounding",
+    "description": "Name 5 things you see, 4 you hear, 3 you feel, 2 you smell, 1 you taste.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Progressive Muscle Release",
+    "description": "Tense and release one muscle group at a time for 2 minutes.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 2,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Cold Water on Wrists",
+    "description": "Run cold water over your wrists or splash your face for 30 seconds. The dive reflex lowers your heart rate.",
+    "category": "wellbeing",
+    "sub_category": "grounding",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Stand Up and Stretch",
+    "description": "Stand up and stretch your arms, back, and legs for 2 minutes.",
+    "category": "physical",
+    "sub_category": "stretching",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Write a New Angle",
+    "description": "Write down one thought that's bothering you, then one alternative way to see it.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Three Things That Went Okay",
+    "description": "List 3 things that went okay today, however small.",
+    "category": "reflection",
+    "sub_category": "gratitude",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Name the Emotion and Rate It",
+    "description": "Name the emotion you're feeling and rate its intensity from 1 to 10.",
+    "category": "reflection",
+    "sub_category": "feelings",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Worry Postponement",
+    "description": "Write the worry down and schedule a specific time to think about it later.",
+    "category": "reflection",
+    "sub_category": "planning",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Do One Two-Minute Task",
+    "description": "Do one 2-minute task you've been avoiding: make the bed, wash one dish.",
+    "category": "productivity",
+    "sub_category": "task breakdown",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Step Outside for Fresh Air",
+    "description": "Step outside for fresh air for 2 minutes.",
+    "category": "physical",
+    "sub_category": "walking",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Text Someone You Care About",
+    "description": "Send one text to a person you care about.",
+    "category": "social",
+    "sub_category": "message",
+    "estimated_minutes": 5,
+    "difficulty": 2,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Put On One Song",
+    "description": "Put on one song you like and just listen, without doing anything else.",
+    "category": "wellbeing",
+    "sub_category": "self-soothing",
+    "estimated_minutes": 3,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "motivation",
+      "stress"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "A Kind Sentence to Yourself",
+    "description": "Write one kind sentence to yourself, as if to a friend.",
+    "category": "reflection",
+    "sub_category": "journaling",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "One Thing You're Grateful For",
+    "description": "Recall one thing you're grateful for and write why.",
+    "category": "reflection",
+    "sub_category": "gratitude",
+    "estimated_minutes": 2,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "A Photo That Makes You Smile",
+    "description": "Look at a photo that makes you smile for a minute.",
+    "category": "reflection",
+    "sub_category": "gratitude",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "loneliness",
+      "motivation"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Take Ten Counted Breaths",
+    "description": "Take 10 slow breaths, counting each one.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Splash Water and Breathe",
+    "description": "Splash cold water on your face, then take 3 deep breaths.",
+    "category": "wellbeing",
+    "sub_category": "breathing",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
+  },
+  {
+    "title": "Unclench and Breathe",
+    "description": "Unclench your jaw, drop your shoulders, and take 3 slow breaths.",
+    "category": "wellbeing",
+    "sub_category": "relaxation",
+    "estimated_minutes": 1,
+    "difficulty": 1,
+    "required_energy": "low",
+    "mood_tags": [
+      "sad",
+      "bored",
+      "tired",
+      "depressed",
+      "gloomy"
+    ],
+    "situation_tags": [
+      "stress",
+      "other"
+    ],
+    "base_xp": 10
   }
 ]

@@ -228,6 +228,32 @@ ACTIONS += [
     act("Write Your Top Five Strengths", "Write down five strengths you know you have.", R, "achievements", 4, 1, "low", ["low"], ["motivation", "loneliness"]),
 ]
 
+# ------------------------------------------------- negative / low curated set
+# Shown as the 1% Better task whenever the user checks in with a negative-low
+# mood (sad, bored, tired, depressed, gloomy).
+NEG_LOW = ["sad", "bored", "tired", "depressed", "gloomy"]
+ACTIONS += [
+    act("Box Breathing", "Breathe in for 4 counts, hold for 4, out for 4, hold for 4. Repeat for 2 minutes.", B, "breathing", 2, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("5-4-3-2-1 Grounding", "Name 5 things you see, 4 you hear, 3 you feel, 2 you smell, 1 you taste.", B, "grounding", 3, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("Progressive Muscle Release", "Tense and release one muscle group at a time for 2 minutes.", B, "relaxation", 2, 2, "low", NEG_LOW, ["stress", "other"]),
+    act("Cold Water on Wrists", "Run cold water over your wrists or splash your face for 30 seconds. The dive reflex lowers your heart rate.", B, "grounding", 1, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("Stand Up and Stretch", "Stand up and stretch your arms, back, and legs for 2 minutes.", PH, "stretching", 2, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("Write a New Angle", "Write down one thought that's bothering you, then one alternative way to see it.", R, "journaling", 5, 2, "low", NEG_LOW, ["motivation", "other"]),
+    act("Three Things That Went Okay", "List 3 things that went okay today, however small.", R, "gratitude", 3, 1, "low", NEG_LOW, ["motivation", "other"]),
+    act("Name the Emotion and Rate It", "Name the emotion you're feeling and rate its intensity from 1 to 10.", R, "feelings", 2, 1, "low", NEG_LOW, ["motivation", "other"]),
+    act("Worry Postponement", "Write the worry down and schedule a specific time to think about it later.", R, "planning", 5, 2, "low", NEG_LOW, ["motivation", "other"]),
+    act("Do One Two-Minute Task", "Do one 2-minute task you've been avoiding: make the bed, wash one dish.", P, "task breakdown", 2, 1, "low", NEG_LOW, ["motivation", "stress"]),
+    act("Step Outside for Fresh Air", "Step outside for fresh air for 2 minutes.", PH, "walking", 2, 1, "low", NEG_LOW, ["motivation", "stress"]),
+    act("Text Someone You Care About", "Send one text to a person you care about.", SOC, "message", 5, 2, "low", NEG_LOW, ["motivation", "stress"]),
+    act("Put On One Song", "Put on one song you like and just listen, without doing anything else.", B, "self-soothing", 3, 1, "low", NEG_LOW, ["motivation", "stress"]),
+    act("A Kind Sentence to Yourself", "Write one kind sentence to yourself, as if to a friend.", R, "journaling", 2, 1, "low", NEG_LOW, ["loneliness", "motivation"]),
+    act("One Thing You're Grateful For", "Recall one thing you're grateful for and write why.", R, "gratitude", 2, 1, "low", NEG_LOW, ["loneliness", "motivation"]),
+    act("A Photo That Makes You Smile", "Look at a photo that makes you smile for a minute.", R, "gratitude", 1, 1, "low", NEG_LOW, ["loneliness", "motivation"]),
+    act("Take Ten Counted Breaths", "Take 10 slow breaths, counting each one.", B, "breathing", 1, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("Splash Water and Breathe", "Splash cold water on your face, then take 3 deep breaths.", B, "breathing", 1, 1, "low", NEG_LOW, ["stress", "other"]),
+    act("Unclench and Breathe", "Unclench your jaw, drop your shoulders, and take 3 slow breaths.", B, "relaxation", 1, 1, "low", NEG_LOW, ["stress", "other"]),
+]
+
 
 def main():
     seen = set()
