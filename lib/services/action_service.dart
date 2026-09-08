@@ -77,6 +77,28 @@ class ActionService {
     return ActionHistory.fromJson(data);
   }
 
+  /// Regenerates today's action using the current mood. Unlike ensureDailyAction
+  /// this replaces today's not-yet-completed task so a fresh mood check-in
+  /// drives the recommendation.
+  Future<ActionHistory> reassignDailyAction({
+    required List<AppAction> actions,
+    required List<ActionHistory> history,
+    String? mood,
+    List<String> situations = const [],
+  }) async {
+    final selected = _recommender.recommend(
+      actions: actions,
+      mood: mood,
+      situations: situations,
+      history: history,
+    );
+    final data = await _client.rpc(
+      'reassign_daily_action',
+      params: {'p_action_id': selected.id},
+    );
+    return ActionHistory.fromJson(data);
+  }
+
   /// Recommend an action for scoring/UI preview (no server write).
   AppAction recommend({
     required List<AppAction> actions,

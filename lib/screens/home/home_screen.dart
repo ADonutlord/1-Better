@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _ensureDailyAction() async {
+  Future<void> _ensureDailyAction({bool regenerate = false}) async {
     if (_preparing) return;
     setState(() => _preparing = true);
     try {
@@ -48,11 +48,20 @@ class _HomeScreenState extends State<HomeScreen> {
       final history = await ActionService.instance.fetchHistory();
       final loop = _app.loop;
       if (loop != null) {
-        await ActionService.instance.ensureDailyAction(
-          loop: loop,
-          actions: actions,
-          history: history,
-        );
+        if (regenerate) {
+          await ActionService.instance.reassignDailyAction(
+            actions: actions,
+            history: history,
+            mood: loop.latestMood?.mood,
+            situations: loop.latestMood?.situation ?? const [],
+          );
+        } else {
+          await ActionService.instance.ensureDailyAction(
+            loop: loop,
+            actions: actions,
+            history: history,
+          );
+        }
       }
       await _app.loadDailyLoop();
     } catch (e) {
@@ -72,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     if (result == true) {
       await _app.loadDailyLoop();
-      await _ensureDailyAction();
+      await _ensureDailyAction(regenerate: true);
     }
   }
 
