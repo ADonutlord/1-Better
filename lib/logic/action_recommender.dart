@@ -1,9 +1,11 @@
 import 'dart:math';
 
-import 'package:one_percent_better/core/constants/app_constants.dart';
 import 'package:one_percent_better/models/models.dart';
 
 /// The 1% Better personalization algorithm.
+///
+/// Each task is now tagged for exactly ONE mood.  The recommender only offers
+/// tasks whose mood tag matches the user's latest check-in.
 ///
 /// score =
 ///     moodMatch        * 40
@@ -93,44 +95,12 @@ class ActionRecommender {
   // Components
   // -------------------------------------------------------------------------
 
+  /// Returns 1.0 when the action is tagged for the exact selected mood,
+  /// 0.0 otherwise.  Null mood falls back to 0.5 so the recommender still
+  /// functions when no check-in is available.
   double moodMatchScore(AppAction action, String? mood) {
     if (mood == null || mood.isEmpty) return 0.5;
-
-    var score = 0.0;
-    if (action.moodTags.contains(mood)) {
-      score = 1.0;
-    } else if (_adjacentMoods(mood).any(action.moodTags.contains)) {
-      score = 0.4;
-    }
-
-    // Negative moods lean toward soothing, low-effort actions.
-    if (Moods.isNegative(mood)) {
-      const soothing = {
-        'breathing', 'grounding', 'relaxation', 'self-soothing', 'rest',
-      };
-      if (soothing.contains(action.subCategory)) {
-        score = max(score, 0.85);
-      }
-      if (action.category == 'wellbeing') {
-        score = max(score, 0.6);
-      }
-    }
-
-    // Positive moods open the door to social, productive and physical picks.
-    if (Moods.isPositive(mood)) {
-      if (action.category == 'social' ||
-          action.category == 'productivity' ||
-          action.category == 'physical' ||
-          action.subCategory == 'gratitude') {
-        score = max(score, 0.85);
-      }
-    }
-
-    // Neutral/mixed moods keep a mild baseline so something is always offered.
-    if (Moods.groupOf(mood) == Moods.neutral && score == 0) {
-      score = 0.3;
-    }
-    return score.clamp(0.0, 1.0);
+    return action.moodTags.contains(mood) ? 1.0 : 0.0;
   }
 
   double situationMatchScore(AppAction action, List<String> situations) {
@@ -215,14 +185,6 @@ class ActionRecommender {
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
-
-  /// Moods in the same group, or any mood with the same polarity, count as
-  /// adjacent (used as a soft match instead of a hard 1.0).
-  static List<String> _adjacentMoods(String mood) {
-    final group = Moods.groupOf(mood);
-    if (group == null) return const [];
-    return Moods.groups[group]!.where((m) => m != mood).toList();
-  }
 
   AppAction _weightedPick(List<_Scored> top) {
     if (top.length == 1) return top.first.action;

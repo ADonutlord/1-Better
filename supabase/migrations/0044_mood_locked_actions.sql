@@ -1,5 +1,33 @@
--- 1% Better action library seed. Repeatable: on conflict (title) do nothing.
--- Re-running never duplicates actions and never touches user data.
+-- Replace the entire action library with mood-locked tasks.
+-- Each task is tagged for exactly ONE mood; it is only offered after
+-- the user checks in with that mood.
+
+BEGIN;
+
+-- Drop existing FKs so the mass DELETE succeeds.
+ALTER TABLE public.action_history
+  DROP CONSTRAINT IF EXISTS action_history_action_id_fkey;
+ALTER TABLE public.daily_progress
+  DROP CONSTRAINT IF EXISTS daily_progress_action_id_fkey;
+
+-- Wipe existing actions.
+DELETE FROM public.actions;
+
+-- History/progress rows for deleted actions keep their snapshot but lose the
+-- FK pointer, so relax NOT NULL and clear it.
+ALTER TABLE public.action_history ALTER COLUMN action_id DROP NOT NULL;
+ALTER TABLE public.daily_progress ALTER COLUMN action_id DROP NOT NULL;
+UPDATE public.action_history SET action_id = NULL WHERE action_id IS NOT NULL;
+UPDATE public.daily_progress SET action_id = NULL WHERE action_id IS NOT NULL;
+
+-- Re-add the FKs with ON DELETE SET NULL so future action removals set
+-- references to NULL rather than cascading.
+ALTER TABLE public.action_history
+  ADD CONSTRAINT action_history_action_id_fkey
+  FOREIGN KEY (action_id) REFERENCES public.actions (id) ON DELETE SET NULL;
+ALTER TABLE public.daily_progress
+  ADD CONSTRAINT daily_progress_action_id_fkey
+  FOREIGN KEY (action_id) REFERENCES public.actions (id) ON DELETE SET NULL;
 
 insert into public.actions
   (title, description, category, sub_category, estimated_minutes, difficulty,
@@ -2506,3 +2534,5 @@ values
 ('Give yourself permission to respond later, not immediately while standing', 'Give yourself permission to respond later, not immediately', 'wellbeing', 'grounding', 2, 1, 'low', '{surprised}'::text[], '{motivation,other}'::text[], 10, true),
 ('Give yourself permission to respond later, not immediately with your eyes closed if possible', 'Give yourself permission to respond later, not immediately', 'wellbeing', 'grounding', 2, 1, 'low', '{surprised}'::text[], '{motivation,other}'::text[], 10, true)
 on conflict (title) do nothing;
+
+COMMIT;
