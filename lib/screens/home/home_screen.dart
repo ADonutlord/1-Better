@@ -34,8 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
       await _app.loadDailyLoop();
     }
     if (!mounted) return;
-    // Ensure today's 1% exists (assign via the recommender if missing).
-    if (_app.loop?.todayAction == null) {
+    // Only auto-assign today's 1% once the user has checked in a mood today,
+    // so a task is never surfaced before the mood check-in.
+    final loop = _app.loop;
+    final moodDoneToday = loop?.dailyProgress?.moodCompleted ?? false;
+    if (loop?.todayAction == null && moodDoneToday) {
       await _ensureDailyAction();
     }
   }
@@ -49,13 +52,15 @@ class _HomeScreenState extends State<HomeScreen> {
       final loop = _app.loop;
       if (loop != null) {
         if (regenerate) {
+          // Always reached from a mood check-in, so the mood is present.
           await ActionService.instance.reassignDailyAction(
             actions: actions,
             history: history,
             mood: loop.latestMood?.mood,
             situations: loop.latestMood?.situation ?? const [],
           );
-        } else {
+        } else if (loop.dailyProgress?.moodCompleted ?? false) {
+          // Never assign before a mood check-in today.
           await ActionService.instance.ensureDailyAction(
             loop: loop,
             actions: actions,
@@ -235,6 +240,8 @@ class _HomeBody extends StatelessWidget {
           loop: loop,
           action: todayAction,
           preparing: preparing,
+          needsMood: !(loop.dailyProgress?.moodCompleted ?? false),
+          onMoodTap: onMoodTap,
           onEnsureAction: onEnsureAction,
           onCompleteAction: onCompleteAction,
         ),
@@ -422,6 +429,8 @@ class _TodayActionCard extends StatelessWidget {
     required this.loop,
     required this.action,
     required this.preparing,
+    required this.needsMood,
+    required this.onMoodTap,
     required this.onEnsureAction,
     required this.onCompleteAction,
   });
@@ -429,6 +438,8 @@ class _TodayActionCard extends StatelessWidget {
   final DailyLoop loop;
   final AppAction? action;
   final bool preparing;
+  final bool needsMood;
+  final VoidCallback onMoodTap;
   final VoidCallback onEnsureAction;
   final ValueChanged<AppAction> onCompleteAction;
 
@@ -467,7 +478,12 @@ class _TodayActionCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (action == null)
-              _ActionEmpty(preparing: preparing, onTap: onEnsureAction)
+              _ActionEmpty(
+                preparing: preparing,
+                needsMood: needsMood,
+                onMoodTap: onMoodTap,
+                onTap: onEnsureAction,
+              )
             else if (completed)
               _ActionDone(action: action!)
             else ...[
@@ -496,9 +512,16 @@ class _TodayActionCard extends StatelessWidget {
 }
 
 class _ActionEmpty extends StatelessWidget {
-  const _ActionEmpty({required this.preparing, required this.onTap});
+  const _ActionEmpty({
+    required this.preparing,
+    required this.needsMood,
+    required this.onMoodTap,
+    required this.onTap,
+  });
 
   final bool preparing;
+  final bool needsMood;
+  final VoidCallback onMoodTap;
   final VoidCallback onTap;
 
   @override
@@ -506,7 +529,9 @@ class _ActionEmpty extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Get today\'s personalized 1% action — picked for how you feel.',
+          needsMood
+              ? 'Check in how you\'re feeling first — your 1% is picked for your exact mood.'
+              : 'Get today\'s personalized 1% action — picked for how you feel.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
@@ -514,14 +539,14 @@ class _ActionEmpty extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: FilledButton.tonal(
-            onPressed: preparing ? null : onTap,
+            onPressed: preparing ? null : (needsMood ? onMoodTap : onTap),
             child: preparing
                 ? const SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2.2),
                   )
-                : const Text('Get my 1%'),
+                : Text(needsMood ? 'Check in my mood' : 'Get my 1%'),
           ),
         ),
       ],

@@ -38,9 +38,17 @@ class ActionRecommender {
   }) {
     assert(actions.isNotEmpty, 'need at least one action to recommend');
 
-    final candidates = actions.where((a) => a.active).toList();
+    // A task is only ever surfaced after a mood check-in, and only from the
+    // 100 tasks tagged for that exact mood. Without a mood there is no pool.
+    if (mood == null || mood.isEmpty) {
+      throw StateError('A mood check-in is required before recommending a task');
+    }
+
+    final candidates = actions
+        .where((a) => a.active && a.moodTags.contains(mood))
+        .toList();
     if (candidates.isEmpty) {
-      throw StateError('No active actions to recommend');
+      throw StateError('No active actions for mood: $mood');
     }
 
     final scored = candidates
@@ -96,10 +104,9 @@ class ActionRecommender {
   // -------------------------------------------------------------------------
 
   /// Returns 1.0 when the action is tagged for the exact selected mood,
-  /// 0.0 otherwise.  Null mood falls back to 0.5 so the recommender still
-  /// functions when no check-in is available.
+  /// 0.0 otherwise. Without a mood nothing matches, so 0.0.
   double moodMatchScore(AppAction action, String? mood) {
-    if (mood == null || mood.isEmpty) return 0.5;
+    if (mood == null || mood.isEmpty) return 0.0;
     return action.moodTags.contains(mood) ? 1.0 : 0.0;
   }
 
