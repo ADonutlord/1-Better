@@ -247,7 +247,7 @@ class _BetaNoticeDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Beta v1.0',
+              'Beta v1.1',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: scheme.primary,
