@@ -22,6 +22,7 @@ class NotificationService {
   static final NotificationService instance = NotificationService._();
 
   static const String _schedulesKey = 'schedules_v1';
+  static const String _notifAskedKey = 'notifications_requested_v1';
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -212,50 +213,80 @@ class NotificationService {
   ///
   /// Daily -> one repeating task. Weekly -> one repeating task per selected
   /// weekday. One-off -> a single task with no repeat component.
+  ///
+  /// Never throws: a failing schedule is logged and skipped so a single bad
+  /// entry (e.g. an alarm scheduled without the exact-alarm permission) can't
+  /// crash the app or block startup.
   Future<void> _register(Schedule s) async {
     if (!s.enabled) return;
     final details = _detailsFor(s.type);
-    final alarm = s.type == ScheduleType.alarm;
-    final mode = alarm
-        ? AndroidScheduleMode.alarmClock
-        : AndroidScheduleMode.inexactAllowWhileIdle;
+    final mode = await _modeFor(s);
     final body =
-        alarm ? 'Alarm set for ${s.timeLabel}.' : 'Time to ${s.title}.';
+        s.type == ScheduleType.alarm
+            ? 'Alarm set for ${s.timeLabel}.'
+            : 'Time to ${s.title}.';
+    try {
+      if (s.repeat == ScheduleRepeat.once) {
+        await _registerOnce(s, details, mode, body);
+        return;
+      }
+      if (s.repeat == ScheduleRepeat.weekly) {
+        await _registerWeekly(s, details, mode, body);
+        return;
+      }
+      await _registerDaily(s, details, mode, body);
+    } on Exception catch (e) {
+      debugPrint('Failed to schedule "${s.title}": $e');
+    }
+  }
 
-    if (s.repeat == ScheduleRepeat.once) {
-      final date = DateTime.tryParse(s.onceDate ?? '');
-      if (date == null) return;
-      var scheduled = tz.TZDateTime(
-          tz.local, date.year, date.month, date.day, s.hour, s.minute);
-      if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) return;
+  Future<void> _registerOnce(
+    Schedule s,
+    NotificationDetails details,
+    AndroidScheduleMode mode,
+    String body,
+  ) async {
+    final date = DateTime.tryParse(s.onceDate ?? '');
+    if (date == null) return;
+    var scheduled = tz.TZDateTime(
+        tz.local, date.year, date.month, date.day, s.hour, s.minute);
+    if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) return;
+    await _plugin.zonedSchedule(
+      _notificationId(s.id),
+      s.title,
+      body,
+      scheduled,
+      details,
+      androidScheduleMode: mode,
+    );
+  }
+
+  Future<void> _registerWeekly(
+    Schedule s,
+    NotificationDetails details,
+    AndroidScheduleMode mode,
+    String body,
+  ) async {
+    if (s.days.isEmpty) return;
+    for (final day in s.days.toSet()) {
       await _plugin.zonedSchedule(
-        _notificationId(s.id),
-        s.title,
+        _notificationId(s.id, day: day),
+        '${s.title} (${_dayName(day)})',
         body,
-        scheduled,
+        _nextOfWeekday(day, s.hour, s.minute),
         details,
         androidScheduleMode: mode,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
-      return;
     }
+  }
 
-    if (s.repeat == ScheduleRepeat.weekly) {
-      if (s.days.isEmpty) return;
-      for (final day in s.days.toSet()) {
-        await _plugin.zonedSchedule(
-          _notificationId(s.id, day: day),
-          '${s.title} (${_dayName(day)})',
-          body,
-          _nextOfWeekday(day, s.hour, s.minute),
-          details,
-          androidScheduleMode: mode,
-          matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-        );
-      }
-      return;
-    }
-
-    // Daily.
+  Future<void> _registerDaily(
+    Schedule s,
+    NotificationDetails details,
+    AndroidScheduleMode mode,
+    String body,
+  ) async {
     await _plugin.zonedSchedule(
       _notificationId(s.id),
       s.title,
@@ -267,6 +298,22 @@ class NotificationService {
     );
   }
 
+  /// The Android schedule mode for a schedule. Alarms prefer the exact
+  /// alarm-clock mode, but fall back to an inexact alarm when the user hasn't
+  /// granted exact-alarm access (SCHEDULE_EXACT_ALARM on Android 12+) so the
+  /// notification is still delivered instead of throwing.
+  Future<AndroidScheduleMode> _modeFor(Schedule s) async {
+    if (s.type != ScheduleType.alarm) {
+      return AndroidScheduleMode.inexactAllowWhileIdle;
+    }
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    final canExact = (await android?.canScheduleExactNotifications()) ?? false;
+    return canExact
+        ? AndroidScheduleMode.alarmClock
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
   String _dayName(int weekday) => const [
         'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
       ][weekday - 1];
@@ -274,11 +321,47 @@ class NotificationService {
   Future<void> _ensureInitialized() async {
     if (!_isSupported()) return;
     await _init();
-    await _requestPermissions();
+    await _requestNotificationsPermission();
+  }
+
+  /// Asks for the Android 13+ runtime notification permission once per install
+  /// so reminders can actually be shown. No-op when not on Android, when the
+  /// permission is already granted, or when it has already been asked for.
+  Future<void> _requestNotificationsPermission() async {
+    if (!Platform.isAndroid) return;
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (await android?.areNotificationsEnabled() ?? false) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_notifAskedKey) ?? false) return;
+    await prefs.setBool(_notifAskedKey, true);
+
+    try {
+      await android?.requestNotificationsPermission();
+    } catch (_) {
+      // Some OEMs throw here; never block startup because of it.
+    }
+  }
+
+  /// Guides the user through the settings screens for exact alarms and
+  /// full-screen intents. Only called when an alarm-type schedule is actually
+  /// created or edited, since both launch system settings.
+  Future<void> _requestAlarmPermissions() async {
+    if (!Platform.isAndroid) return;
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    try {
+      await android?.requestExactAlarmsPermission();
+      await android?.requestFullScreenIntentPermission();
+    } catch (_) {
+      // Non-fatal; scheduling falls back to inexact mode.
+    }
   }
 
   Future<void> addSchedule(Schedule s) async {
     await _ensureInitialized();
+    if (s.type == ScheduleType.alarm) await _requestAlarmPermissions();
     _schedules = [..._schedules, s];
     await _persist();
     await _register(s);
@@ -286,6 +369,7 @@ class NotificationService {
 
   Future<void> updateSchedule(Schedule s) async {
     await _ensureInitialized();
+    if (s.type == ScheduleType.alarm) await _requestAlarmPermissions();
     final idx = _schedules.indexWhere((x) => x.id == s.id);
     if (idx < 0) return;
     // Cancel anything previously scheduled for this schedule (all weekdays).
@@ -313,21 +397,12 @@ class NotificationService {
   }
 
   /// Re-registers every enabled schedule with the OS. Called on app startup.
+  /// Also initializes the plugin and (once per install) asks for the Android
+  /// notification permission, even when there are no schedules yet.
   Future<void> restoreAll() async {
-    if (_schedules.isEmpty) return;
     await _ensureInitialized();
     for (final s in _schedules) {
       await _register(s);
     }
-  }
-
-  Future<void> _requestPermissions() async {
-    if (!Platform.isAndroid) return;
-    final android = _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    await android?.requestNotificationsPermission();
-    await android?.requestExactAlarmsPermission();
-    await android?.requestFullScreenIntentPermission();
   }
 }

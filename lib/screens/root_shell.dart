@@ -24,6 +24,7 @@ class RootShell extends StatefulWidget {
 
 class _RootShellState extends State<RootShell> {
   final AppState _app = AppState.instance;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _index = 0;
 
   late final List<Widget> _pages = _buildPages();
@@ -123,14 +124,14 @@ class _RootShellState extends State<RootShell> {
 
   @override
   Widget build(BuildContext context) {
-    final destinations = <({Widget icon, String label})>[
-      (icon: const Icon(Icons.home_outlined), label: 'Home'),
-      (icon: const Icon(Icons.flag_outlined), label: 'Goals'),
-      (icon: const Icon(Icons.chat_bubble_outline), label: 'Chat'),
-      (icon: const Icon(Icons.forum_outlined), label: 'Community'),
-      (icon: const Icon(Icons.school_outlined), label: 'Study'),
-      (icon: const Icon(Icons.insights_outlined), label: 'Progress'),
-      (icon: const Icon(Icons.person_outline), label: 'Profile'),
+    final destinations = <({IconData icon, String label})>[
+      (icon: Icons.home_outlined, label: 'Home'),
+      (icon: Icons.flag_outlined, label: 'Goals'),
+      (icon: Icons.chat_bubble_outline, label: 'Chat'),
+      (icon: Icons.forum_outlined, label: 'Community'),
+      (icon: Icons.school_outlined, label: 'Study'),
+      (icon: Icons.insights_outlined, label: 'Progress'),
+      (icon: Icons.person_outline, label: 'Profile'),
     ];
 
     return ListenableBuilder(
@@ -154,7 +155,9 @@ class _RootShellState extends State<RootShell> {
               children: [
                 _backdrop(),
                 Scaffold(
+                  key: _scaffoldKey,
                   backgroundColor: Colors.transparent,
+                  drawer: isDesktop ? null : _buildDrawer(destinations, theme),
                   body: isDesktop
                       ? Row(
                           children: [
@@ -194,8 +197,8 @@ class _RootShellState extends State<RootShell> {
                                   destinations: [
                                     for (final d in destinations)
                                       NavigationRailDestination(
-                                        icon: d.icon,
-                                        selectedIcon: d.icon,
+                                        icon: Icon(d.icon),
+                                        selectedIcon: Icon(d.icon),
                                         label: Text(d.label),
                                       ),
                                   ],
@@ -209,45 +212,138 @@ class _RootShellState extends State<RootShell> {
                       : SafeArea(child: _pages[_index]),
                   bottomNavigationBar: isDesktop
                       ? null
-                      : Theme(
-                          data: theme.copyWith(
-                            navigationBarTheme: NavigationBarThemeData(
-                              iconTheme: WidgetStateProperty.resolveWith(
-                                (states) => IconThemeData(
-                                  color: states.contains(WidgetState.selected)
-                                      ? chromeColor
-                                      : chromeColor.withValues(alpha: 0.85),
-                                ),
-                              ),
-                            ),
-                          ),
-                          child: NavigationBar(
-                            backgroundColor: chromeBg,
-                            indicatorColor: theme.colorScheme.primaryContainer,
-                            labelTextStyle: WidgetStatePropertyAll(
-                              TextStyle(
-                                color: chromeColor,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            selectedIndex: _index,
-                            onDestinationSelected: (i) =>
-                                setState(() => _index = i),
-                            destinations: [
-                              for (final d in destinations)
-                                NavigationDestination(
-                                  icon: d.icon,
-                                  label: d.label,
-                                ),
-                            ],
-                          ),
-                        ),
+                      : _buildBottomBar(destinations, chromeColor, chromeBg),
                 ),
               ],
             );
           },
         );
       },
+    );
+  }
+
+  /// Compact bottom bar: a single three-line menu button (Facebook style) that
+  /// opens the drawer, with the active page label beside it.
+  Widget _buildBottomBar(
+    List<({IconData icon, String label})> destinations,
+    Color chromeColor,
+    Color chromeBg,
+  ) {
+    return Container(
+      color: chromeBg,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 56,
+          child: Row(
+            children: [
+              IconButton(
+                tooltip: 'Menu',
+                icon: Icon(Icons.menu, color: chromeColor),
+                onPressed: () =>
+                    _scaffoldKey.currentState?.openDrawer(),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    destinations[_index].label,
+                    style: TextStyle(
+                      color: chromeColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 48),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Facebook-style side drawer listing every section, with the active one
+  /// highlighted.
+  Widget _buildDrawer(
+    List<({IconData icon, String label})> destinations,
+    ThemeData theme,
+  ) {
+    final chromeColor = _chromeTextColor(context);
+    final chromeBg = Theme.of(context).brightness == Brightness.dark
+        ? (ThemeController.instance.liquid
+              ? const Color(0xB3161D18)
+              : const Color(0xFF1D2620))
+        : (ThemeController.instance.liquid
+              ? const Color(0xB3F4F8F5)
+              : const Color(0xFFF5F9F6));
+    return Theme(
+      data: theme.copyWith(
+        canvasColor: chromeBg,
+        colorScheme: theme.colorScheme.copyWith(onSurface: chromeColor),
+      ),
+      child: Drawer(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                child: Row(
+                  children: [
+                    const _LogoBadge(),
+                    const SizedBox(width: 12),
+                    Text(
+                      '1% Better',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: chromeColor.withValues(alpha: 0.15)),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  children: [
+                    for (var i = 0; i < destinations.length; i++)
+                      ListTile(
+                        selected: i == _index,
+                        selectedTileColor:
+                            theme.colorScheme.primaryContainer,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        leading: Icon(
+                          destinations[i].icon,
+                          color: i == _index
+                              ? theme.colorScheme.primary
+                              : chromeColor.withValues(alpha: 0.85),
+                        ),
+                        title: Text(
+                          destinations[i].label,
+                          style: TextStyle(
+                            color: i == _index
+                                ? theme.colorScheme.primary
+                                : chromeColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() => _index = i);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

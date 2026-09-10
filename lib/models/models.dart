@@ -141,6 +141,53 @@ class DailyScreenTime {
       );
 }
 
+/// How long a single app was used during a day, measured via the Android
+/// usage-stats API. [label] is the friendly name ("Home screen" for the
+/// launcher); [package] is the raw package identifier.
+class AppUsage {
+  const AppUsage({
+    required this.package,
+    required this.label,
+    required this.minutes,
+  });
+
+  final String package;
+  final String label;
+  final int minutes;
+
+  factory AppUsage.fromJson(Map<String, dynamic> json) => AppUsage(
+        package: (json['package'] as String?) ?? '',
+        label: (json['label'] as String?) ?? '',
+        minutes: (json['minutes'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// A measured day of screen usage: total minutes plus a per-app breakdown.
+/// Mirrors what the native usage-stats bridge returns.
+class ScreenTimeDay {
+  const ScreenTimeDay({
+    required this.day,
+    required this.totalMinutes,
+    required this.apps,
+  });
+
+  final DateTime day;
+  final int totalMinutes;
+  final List<AppUsage> apps;
+
+  double get hours => totalMinutes / 60;
+
+  factory ScreenTimeDay.fromJson(Map<String, dynamic> json) => ScreenTimeDay(
+        day: _parseDate(json['day']) ?? DateTime.now(),
+        totalMinutes: (json['totalMinutes'] as num?)?.toInt() ?? 0,
+        apps: [
+          for (final a in (json['apps'] as List? ?? const <dynamic>[]))
+            if (a is Map)
+              AppUsage.fromJson(Map<String, dynamic>.from(a)),
+        ],
+      );
+}
+
 class MoodCheckin {
   const MoodCheckin({
     required this.id,
@@ -464,8 +511,9 @@ class DailyLoop {
 }
 
 /// Levels in the goal breakdown hierarchy. A lifetime goal is split into
-/// yearly, which split into monthly, which split into daily tasks.
-enum GoalLevel { lifetime, yearly, monthly, daily }
+/// yearly, which split into monthly, which split into weekly, which split
+/// into daily tasks.
+enum GoalLevel { lifetime, yearly, monthly, weekly, daily }
 
 /// One node in a user's goal tree. Lives in the self-referencing `goals`
 /// table; [children] holds the sub-goals one level down (built client-side
@@ -479,6 +527,7 @@ class Goal {
     required this.description,
     required this.completed,
     required this.createdAt,
+    this.dueDate,
     this.children = const [],
   });
 
@@ -489,13 +538,15 @@ class Goal {
   final String description;
   final bool completed;
   final DateTime createdAt;
+  final DateTime? dueDate;
   final List<Goal> children;
 
   /// The goal level directly below this one, or null for daily (a leaf).
   GoalLevel? get childLevel => switch (level) {
         GoalLevel.lifetime => GoalLevel.yearly,
         GoalLevel.yearly => GoalLevel.monthly,
-        GoalLevel.monthly => GoalLevel.daily,
+        GoalLevel.monthly => GoalLevel.weekly,
+        GoalLevel.weekly => GoalLevel.daily,
         GoalLevel.daily => null,
       };
 
@@ -503,6 +554,7 @@ class Goal {
         GoalLevel.lifetime => 'Lifetime goal',
         GoalLevel.yearly => 'Yearly',
         GoalLevel.monthly => 'Monthly',
+        GoalLevel.weekly => 'Weekly',
         GoalLevel.daily => 'Daily',
       };
 
@@ -512,12 +564,14 @@ class Goal {
         level: switch (json['level'] as String?) {
           'yearly' => GoalLevel.yearly,
           'monthly' => GoalLevel.monthly,
+          'weekly' => GoalLevel.weekly,
           'daily' => GoalLevel.daily,
           _ => GoalLevel.lifetime,
         },
         title: (json['title'] as String?) ?? '',
         description: (json['description'] as String?) ?? '',
         completed: (json['completed'] as bool?) ?? false,
+        dueDate: _parseDate(json['due_date']),
         createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
       );
 }

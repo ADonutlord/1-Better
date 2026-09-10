@@ -1,10 +1,13 @@
 import 'package:one_percent_better/models/models.dart';
 import 'package:one_percent_better/services/supabase_service.dart';
+import 'package:one_percent_better/services/usage_stats_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 
-/// Records study sessions (and the XP they earn), stores manually-logged daily
-/// screen time, and provides the weekly statistics used by the Study tab.
+/// Records study sessions (and the XP they earn), and provides the weekly screen
+/// time statistics used by the Study tab. Screen time is measured automatically
+/// through [UsageStatsService] (Android UsageStatsManager) and persisted by the
+/// `log_day_usage` RPC; reads go through direct selects.
 ///
 /// Reads use direct selects (RLS confines them to the caller's own rows);
 /// all writes go through SECURITY DEFINER RPCs.
@@ -15,10 +18,32 @@ class StudyService {
 
   SupabaseClient get _client => SupabaseService.instance.client;
 
-  /// True when running on Android (used to gate the friendly screen-time
-  /// prompt before starting a study session; never shown on desktop).
+  /// True when running on Android.
   bool get isAndroid =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+  /// Measures screen time on the device and stores it server-side for the
+  /// current week. Safe to call on any platform (no-op on non-Android).
+  Future<void> syncScreenTimeFromDevice({int days = 7}) async {
+    await UsageStatsService.instance.syncToServer(days: days);
+  }
+
+  /// Per-app screen time breakdown for [day], biggest first.
+  Future<List<AppUsage>> fetchAppUsage({required DateTime day}) async {
+    final rows = await _client
+        .from('app_screen_time')
+        .select('package_name, app_label, minutes')
+        .eq('day', _dateString(day))
+        .order('minutes', ascending: false);
+    return [
+      for (final r in rows)
+        AppUsage(
+          package: (r['package_name'] as String?) ?? '',
+          label: (r['app_label'] as String?) ?? '',
+          minutes: (r['minutes'] as num?)?.toInt() ?? 0,
+        ),
+    ];
+  }
 
   /// Persists a finished study block server-side. The server also awards
   /// 5 XP per minute studied (returned in the response as `xp_awarded`).
@@ -32,28 +57,6 @@ class StudyService {
     });
     final map = (res as Map?)?.cast<String, dynamic>() ?? const {};
     return (map['xp_awarded'] as int?) ?? 0;
-  }
-
-  /// Upserts the caller's screen-time minutes for a given local calendar day.
-  Future<void> setScreenTime(DateTime day, int minutes) async {
-    await _client.rpc('set_screen_time', params: {
-      'p_day': '${day.year.toString().padLeft(4, '0')}-'
-          '${day.month.toString().padLeft(2, '0')}-'
-          '${day.day.toString().padLeft(2, '0')}',
-      'p_minutes': minutes,
-    });
-  }
-
-  /// Returns today's logged screen-time minutes, or null if not logged yet.
-  Future<int?> screenTimeToday() async {
-    final now = DateTime.now();
-    final rows = await _client
-        .from('daily_screen_time')
-        .select('minutes')
-        .eq('day', _dateString(now))
-        .limit(1);
-    if (rows.isEmpty) return null;
-    return (rows.first['minutes'] as num?)?.toInt();
   }
 
   /// Fetches the caller's study sessions since [since] (inclusive), ordered

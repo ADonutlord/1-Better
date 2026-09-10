@@ -58,11 +58,9 @@ class _StudyScreenState extends State<StudyScreen> {
     if (mounted) _load();
   }
 
-  Future<void> _editScreenTime(List<MapEntry<DateTime, double>> days) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ScreenTimeSheet(days: days)),
-    );
-    if (mounted) _load();
+  Future<void> _syncScreenTime() async {
+    final changed = await syncScreenTimeFlow(context, _study);
+    if (changed && mounted) _load();
   }
 
   @override
@@ -80,6 +78,10 @@ class _StudyScreenState extends State<StudyScreen> {
     final avgScreen = StudyService.averageOf(screen ?? const []);
     final studyIsolated = (avgStudy ?? 0) > 0;
     final screenIsolated = (avgScreen ?? 0) > 0;
+    final weekScreenHours =
+        (screen ?? const []).fold<double>(0, (s, e) => s + e.value);
+    final weekStudyHours =
+        (study ?? const []).fold<double>(0, (s, e) => s + e.value);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -129,9 +131,9 @@ class _StudyScreenState extends State<StudyScreen> {
                         letterSpacing: 1.1, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 OutlinedButton.icon(
-                  onPressed: () => _editScreenTime(screen!),
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Log screen time'),
+                  onPressed: _syncScreenTime,
+                  icon: const Icon(Icons.sync, size: 16),
+                  label: const Text('Sync screen time'),
                   style: OutlinedButton.styleFrom(
                     visualDensity: VisualDensity.compact,
                   ),
@@ -211,6 +213,12 @@ class _StudyScreenState extends State<StudyScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            StatCard(
+              icon: '⚖️',
+              label: 'SCREEN : STUDY RATIO',
+              value: screenStudyRatio(weekScreenHours, weekStudyHours),
             ),
             const SizedBox(height: 16),
             Center(

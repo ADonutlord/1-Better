@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Required for all network access (Supabase REST + Realtime).
          Debug builds get this from src/debug/AndroidManifest.xml, but
          release builds need it here. -->
@@ -13,6 +14,17 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <!-- Ring/vibrate for alarms. -->
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Automatic screen-time measurement via UsageStatsManager. This is a
+         special "Usage access" permission: the user must enable it manually in
+         Settings (we deep-link there). Resolving app labels needs package
+         visibility, hence QUERY_ALL_PACKAGES. -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission
+        android:name="android.permission.USAGE_STATS"
+        tools:ignore="ProtectedPermissions"/>
     <application
         android:label="1% Better"
         android:name="${applicationName}"

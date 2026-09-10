@@ -2,8 +2,9 @@ import 'package:one_percent_better/models/models.dart';
 import 'package:one_percent_better/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Manages the user's goal tree: a lifetime goal broken into yearly, monthly
-/// and daily actionable tasks, stored in the self-referencing `goals` table.
+/// Manages the user's goal tree: a lifetime goal broken into yearly, monthly,
+/// weekly and daily actionable tasks, stored in the self-referencing `goals`
+/// table.
 ///
 /// Reads go through direct selects (RLS confines them to the caller's own
 /// rows); all writes go through SECURITY DEFINER RPCs.
@@ -42,6 +43,7 @@ class GoalService {
         title: g.title,
         description: g.description,
         completed: g.completed,
+        dueDate: g.dueDate,
         createdAt: g.createdAt,
         children: kids.map(build).toList(),
       );
@@ -50,14 +52,23 @@ class GoalService {
     return (byParent[null] ?? const <Goal>[]).map(build).toList();
   }
 
+  static String? _dueDateParam(DateTime? dueDate) {
+    if (dueDate == null) return null;
+    return '${dueDate.year.toString().padLeft(4, '0')}-'
+        '${dueDate.month.toString().padLeft(2, '0')}-'
+        '${dueDate.day.toString().padLeft(2, '0')}';
+  }
+
   /// Creates a top-level lifetime goal, returns its id.
   Future<void> createGoal({
     required String title,
     String description = '',
+    DateTime? dueDate,
   }) async {
     await _client.rpc('create_goal', params: {
       'p_title': title,
       'p_description': description,
+      'p_due_date': _dueDateParam(dueDate),
     });
   }
 
@@ -66,11 +77,13 @@ class GoalService {
     required String parentId,
     required String title,
     String description = '',
+    DateTime? dueDate,
   }) async {
     await _client.rpc('create_goal_child', params: {
       'p_parent_goal_id': parentId,
       'p_title': title,
       'p_description': description,
+      'p_due_date': _dueDateParam(dueDate),
     });
   }
 
@@ -78,11 +91,13 @@ class GoalService {
     required String id,
     required String title,
     String? description,
+    DateTime? dueDate,
   }) async {
     await _client.rpc('update_goal', params: {
       'p_goal_id': id,
       'p_title': title,
       'p_description': description,
+      'p_due_date': _dueDateParam(dueDate),
     });
   }
 

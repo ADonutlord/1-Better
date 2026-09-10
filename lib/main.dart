@@ -19,7 +19,11 @@ Future<void> main() async {
   AppState.instance.bindAuth(SupabaseService.instance.client);
   await ThemeController.instance.load();
   await NotificationService.instance.load();
-  await NotificationService.instance.restoreAll();
+  try {
+    await NotificationService.instance.restoreAll();
+  } catch (_) {
+    // Never let notification restoration block app startup.
+  }
 
   runApp(const OnePercentBetterApp());
 }

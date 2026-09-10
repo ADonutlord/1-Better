@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../models/models.dart';
 import '../../services/study_service.dart';
 import 'study_timer_screen.dart';
 import 'study_widgets.dart';
 
 /// Full-screen study statistics: weekly study vs screen time bar graph,
-/// today's numbers, and daily averages. Also opens the (lockdown) study timer.
+/// today's numbers, today's per-app screen-time breakdown, and daily averages.
+/// Screen time is measured automatically (Android UsageStatsManager).
 class StudyStatsScreen extends StatefulWidget {
   const StudyStatsScreen({super.key});
 
@@ -19,6 +21,7 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
   final StudyService _study = StudyService.instance;
   List<MapEntry<DateTime, double>>? _studyWeek;
   List<MapEntry<DateTime, double>>? _screenWeek;
+  List<AppUsage>? _todayApps;
   bool _loading = true;
   String? _error;
 
@@ -35,10 +38,12 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
     });
     try {
       final (study, screen) = await _study.weekHours();
+      final todayApps = await _study.fetchAppUsage(day: DateTime.now());
       if (!mounted) return;
       setState(() {
         _studyWeek = study;
         _screenWeek = screen;
+        _todayApps = todayApps;
         _loading = false;
       });
     } catch (e) {
@@ -50,11 +55,9 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
     }
   }
 
-  Future<void> _editScreenTime(List<MapEntry<DateTime, double>> days) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ScreenTimeSheet(days: days)),
-    );
-    if (mounted) _load();
+  Future<void> _syncScreenTime() async {
+    final changed = await syncScreenTimeFlow(context, _study);
+    if (changed && mounted) _load();
   }
 
   Future<void> _openTimer() async {
@@ -79,6 +82,10 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
     final avgScreen = StudyService.averageOf(screen ?? const []);
     final hasStudy = (avgStudy ?? 0) > 0;
     final hasScreen = (avgScreen ?? 0) > 0;
+    final weekScreenHours =
+        (screen ?? const []).fold<double>(0, (s, e) => s + e.value);
+    final weekStudyHours =
+        (study ?? const []).fold<double>(0, (s, e) => s + e.value);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -139,14 +146,21 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
                                 ChartLegend(
                                     color: _screenAreaColor,
                                     label: 'Screen time'),
-                                const SizedBox(width: 6),
-                                TextButton(
-                                  onPressed: () => _editScreenTime(screen),
-                                  child: const Text('Edit'),
-                                ),
                               ],
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: OutlinedButton.icon(
+                        onPressed: _syncScreenTime,
+                        icon: const Icon(Icons.sync, size: 16),
+                        label: const Text('Sync screen time'),
+                        style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
                         ),
                       ),
                     ),
@@ -191,15 +205,14 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      'Apps can\'t read your screen time automatically. Use '
-                      '"Edit" to log each day\'s total from your phone\'s '
-                      'Digital Wellbeing / Screen Time screen.',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    StatCard(
+                      icon: '⚖️',
+                      label: 'SCREEN : STUDY RATIO',
+                      value: screenStudyRatio(weekScreenHours, weekStudyHours),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
+                    _TodayAppBreakdown(apps: _todayApps),
+                    const SizedBox(height: 12),
                     Center(
                       child: Text(
                         hasStudy
@@ -211,6 +224,71 @@ class _StudyStatsScreenState extends State<StudyStatsScreen> {
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+/// Today's per-app screen-time list, straight from the device measurement.
+class _TodayAppBreakdown extends StatelessWidget {
+  const _TodayAppBreakdown({required this.apps});
+
+  final List<AppUsage>? apps;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final list = apps ?? const <AppUsage>[];
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("TODAY'S SCREEN TIME BY APP",
+                style: theme.textTheme.labelLarge?.copyWith(
+                    letterSpacing: 1.1, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 4),
+            Text(
+              'Measured automatically from your device — including home',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            if (list.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  'Nothing logged yet. Tap "Sync screen time" to pull today\'s '
+                  'usage from your phone.',
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              )
+            else
+              for (final app in list)
+                ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    child: Text(
+                      app.label.isEmpty
+                          ? '?'
+                          : app.label.characters.first.toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  title: Text(app.label,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  trailing: Text(formatHours(app.minutes / 60),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w800)),
+                ),
+          ],
+        ),
+      ),
     );
   }
 }

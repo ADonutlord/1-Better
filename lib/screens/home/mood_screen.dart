@@ -54,82 +54,90 @@ class _MoodScreenState extends State<MoodScreen> {
         ],
       ),
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                Text('Check in with yourself',
-                    style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
-                Text(
-                  'Just choose what fits. This helps us pick a better 1% for you tomorrow.',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 24),
-                for (final group in Moods.groups.entries) ...[
-                  Text(
-                    Moods.groupLabels[group.key]!,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      for (final mood in group.value)
-                        _MoodTile(
-                          mood: mood,
-                          selected: _mood == mood,
-                          onTap: () => setState(() => _mood = mood),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                ],
-                const SizedBox(height: 28),
-                Text('What\'s affecting you? (optional)',
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+        child: Stack(
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                   children: [
-                    for (final s in Situations.keys)
-                      ChoiceChip(
-                        label: Text(_situationLabel(s)),
-                        selected: _situations.contains(s),
-                        showCheckmark: false,
-                        onSelected: (sel) => setState(() {
-                          if (sel) {
-                            _situations.add(s);
-                          } else {
-                            _situations.remove(s);
-                          }
-                        }),
+                    Text('Check in with yourself',
+                        style: theme.textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Just choose what fits. This helps us pick a better 1% for you tomorrow.',
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 24),
+                    for (final group in Moods.groups.entries) ...[
+                      Text(
+                        Moods.groupLabels[group.key]!,
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          for (final mood in group.value)
+                            _MoodTile(
+                              mood: mood,
+                              selected: _mood == mood,
+                              onTap: () => setState(() => _mood = mood),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                    const SizedBox(height: 28),
+                    Text('What\'s affecting you? (optional)',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final s in Situations.keys)
+                          ChoiceChip(
+                            label: Text(_situationLabel(s)),
+                            selected: _situations.contains(s),
+                            showCheckmark: false,
+                            onSelected: (sel) => setState(() {
+                              if (sel) {
+                                _situations.add(s);
+                              } else {
+                                _situations.remove(s);
+                              }
+                            }),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 28),
-                FilledButton(
-                  onPressed: (_mood == null || _submitting) ? null : _submit,
-                  child: _submitting
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.4),
-                        )
-                      : const Text('Save my check-in'),
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              right: 20,
+              bottom: 20,
+              child: FilledButton.icon(
+                onPressed: (_mood == null || _submitting) ? null : _submit,
+                icon: _submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2.2),
+                      )
+                    : const Icon(Icons.check),
+                label: const Text('Save'),
+              ),
+            ),
+          ],
         ),
       ),
     );

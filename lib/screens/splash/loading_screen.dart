@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
+import 'package:one_percent_better/services/usage_stats_service.dart';
 
 /// Full-screen launch animation: a progress bar fills 0 → 100% over
 /// [duration] while a mini figure goes from sad and stressed to living a
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 class LifeImprovementLoader extends StatefulWidget {
   const LifeImprovementLoader({
     super.key,
-    this.duration = const Duration(seconds: 5),
+    this.duration = const Duration(seconds: 3),
     this.onFinished,
   });
 
@@ -164,7 +165,7 @@ class _LifeImprovementLoaderState extends State<LifeImprovementLoader>
 /// Shows [LifeImprovementLoader] until its bar fully reaches 100%, then
 /// crossfades into the real app content.
 class SplashGate extends StatefulWidget {
-  const SplashGate({super.key, required this.child, this.duration = const Duration(seconds: 5)});
+  const SplashGate({super.key, required this.child, this.duration = const Duration(seconds: 3)});
 
   final Widget child;
   final Duration duration;
@@ -183,13 +184,15 @@ class _SplashGateState extends State<SplashGate> {
     setState(() => _done = true);
     if (!_noticeShown) {
       _noticeShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
-        showDialog<void>(
+        await showDialog<void>(
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => const _BetaNoticeDialog(),
         );
+        if (!mounted) return;
+        await UsageStatsService.instance.requestUsageAccessIfFresh(context);
       });
     }
   }

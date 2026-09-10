@@ -156,63 +156,7 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
   }
 
   Future<void> _start() async {
-    if (_study.isAndroid && !await _screenTimeCapturedToday()) {
-      final minutes = await _friendlyScreenTimePrompt();
-      if (!mounted || minutes == null) return;
-      if (minutes > 0) {
-        // Log the chosen amount, best-effort (never block focus on a save error).
-        try {
-          await _study.setScreenTime(DateTime.now(), minutes);
-        } catch (_) {}
-      }
-    }
     _beginCountdown();
-  }
-
-  /// Friendly, warm gate for Android: if today's screen time isn't logged yet,
-  /// ask the student to log it with one tap before they start focusing. Returns
-  /// the chosen minutes (0 = skip; still allowed), or null if they cancelled.
-  /// Not shown on desktop.
-  Future<int?> _friendlyScreenTimePrompt() async {
-    return showDialog<int>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        icon: const Icon(Icons.self_improvement_outlined, size: 32),
-        title: const Text('One quick thing 🌱'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Lovely that you\'re focusing! Could you log how much time you\'ve '
-              'spent on your phone today? It only takes a tap and helps you see '
-              'your study vs screen balance.',
-              style: TextStyle(height: 1.4),
-            ),
-            SizedBox(height: 16),
-            _QuickChoices(),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, 0),
-            child: const Text('Skip for now'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Whether today's screen time has already been logged (best-effort).
-  Future<bool> _screenTimeCapturedToday() async {
-    try {
-      final minutes = await _study.screenTimeToday();
-      return minutes != null;
-    } catch (_) {
-      // If we can't reach the server, don't block starting a session.
-      return true;
-    }
   }
 
   void _beginCountdown() {
@@ -452,37 +396,6 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
           ),
         ),
       ),
-    );
-  }
-}
-
-/// The tap-to-log options shown inside the friendly screen-time prompt.
-/// Each chip pops its chosen minutes from the enclosing dialog; tapping it
-/// also saves the value via the enclosing screen's handler.
-class _QuickChoices extends StatelessWidget {
-  const _QuickChoices();
-
-  static const _options = <(int, String)>[
-    (30, '30m'),
-    (60, '1h'),
-    (120, '2h'),
-    (180, '3h'),
-    (240, '4h'),
-    (300, '5h+'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final (minutes, label) in _options)
-          ActionChip(
-            label: Text(label),
-            onPressed: () => Navigator.of(context).pop(minutes),
-          ),
-      ],
     );
   }
 }

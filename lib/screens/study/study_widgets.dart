@@ -3,8 +3,63 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../services/study_service.dart';
+import '../../services/usage_stats_service.dart';
 
 /// Shared widgets for the Study tab and Study statistics screen.
+
+/// Syncs measured device screen time to the server, handling the Android
+/// "Usage access" permission flow. Returns true when the data was re-read
+/// afterwards (i.e. the caller should reload), false when the user needs to
+/// grant the permission first.
+Future<bool> syncScreenTimeFlow(
+  BuildContext context,
+  StudyService study,
+) async {
+  final granted = await UsageStatsService.instance.hasUsageAccess();
+  if (!context.mounted) return false;
+  if (!granted) {
+    final enable = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        icon: const Icon(Icons.monitor_heart_outlined, size: 32),
+        title: const Text('Allow screen-time access?'),
+        content: const Text(
+          'To measure your screen time automatically (and see which apps you '
+          'use most), turn on "Usage access" for 1% Better in Settings. Your '
+          'data stays on your device and in your own account.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Not now'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+    if (enable == true && context.mounted) {
+      await UsageStatsService.instance.openUsageSettings();
+    }
+    return false;
+  }
+
+  bool ok;
+  try {
+    ok = await UsageStatsService.instance.syncToServer();
+  } catch (e) {
+    ok = false;
+  }
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(ok ? 'Screen time synced ✓' : 'Could not sync screen time.'),
+    ));
+  }
+  return ok;
+}
 
 class StatCard extends StatelessWidget {
   const StatCard({
@@ -253,142 +308,14 @@ String formatHours(double h) {
   return '${hrs}h ${mins}m';
 }
 
-/// A screen where the student logs their daily screen-time minutes for each
-/// day of the current week. [days] maps a local date to hours of screen time.
-///
-/// Apps can't read device screen-usage automatically, so the student enters it
-/// from Digital Wellbeing / Screen Time; we store it via `set_screen_time`.
-class ScreenTimeSheet extends StatefulWidget {
-  const ScreenTimeSheet({super.key, required this.days});
-
-  final List<MapEntry<DateTime, double>> days;
-
-  @override
-  State<ScreenTimeSheet> createState() => _ScreenTimeSheetState();
-}
-
-class _ScreenTimeSheetState extends State<ScreenTimeSheet> {
-  final StudyService _study = StudyService.instance;
-  final Map<int, TextEditingController> _controllers = {};
-  bool _saving = false;
-
-  static const _names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  @override
-  void initState() {
-    super.initState();
-    for (final day in widget.days) {
-      _controllers[day.key.millisecondsSinceEpoch] =
-          TextEditingController(text: (day.value * 60).round().toString());
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final c in _controllers.values) {
-      c.dispose();
-    }
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    setState(() => _saving = true);
-    var failed = false;
-    for (final day in widget.days) {
-      final c = _controllers[day.key.millisecondsSinceEpoch];
-      final raw = c?.text.trim() ?? '';
-      final minutes = int.tryParse(raw) ?? -1;
-      if (minutes < 0 || minutes > 24 * 60) continue;
-      try {
-        await _study.setScreenTime(day.key, minutes);
-      } catch (_) {
-        failed = true;
-      }
-    }
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-          failed ? 'Some entries could not be saved.' : 'Screen time saved ✓'),
-    ));
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('Log screen time'),
-        actions: [
-          TextButton(
-            onPressed: _saving ? null : _save,
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('📱 Screen time this week',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Apps can\'t read your screen time automatically. Enter each '
-                    'day\'s total from your phone\'s Digital Wellbeing / Screen '
-                    'Time screen so we can graph it and compare it to your study '
-                    'time.',
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          for (var i = 0; i < widget.days.length; i++)
-            if (widget.days[i].key
-                .isBefore(DateTime.now().add(const Duration(days: 1)))) ...[
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  child: Text(_names[i],
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w700)),
-                ),
-                title: Text(
-                  '${widget.days[i].key.day} ${_month(widget.days[i].key.month)}',
-                ),
-                trailing: SizedBox(
-                  width: 120,
-                  child: TextField(
-                    controller:
-                        _controllers[widget.days[i].key.millisecondsSinceEpoch],
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      suffixText: 'min',
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              const Divider(height: 1),
-            ],
-        ],
-      ),
-    );
-  }
-
-  static String _month(int m) =>
-      const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-          'Oct', 'Nov', 'Dec'][m - 1];
+/// Screen time relative to study time as a compact ratio, e.g. "3.2 : 1"
+/// (about three hours screen per hour studied). Returns "—" when there's no
+/// study time to compare against.
+String screenStudyRatio(double screenHours, double studyHours) {
+  if (studyHours <= 0) return '—';
+  final ratio = screenHours / studyHours;
+  final text = ratio >= 10
+      ? ratio.toStringAsFixed(0)
+      : ratio.toStringAsFixed(1);
+  return '$text : 1';
 }

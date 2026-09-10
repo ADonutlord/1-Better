@@ -4,8 +4,8 @@ import '../../models/models.dart';
 import '../../services/goal_service.dart';
 
 /// Lets the user plan a big lifetime goal and break it down into yearly,
-/// monthly and daily actionable tasks. Drill into a goal to see its sub-goals;
-/// mark daily tasks done as you finish them.
+/// monthly, weekly and daily actionable tasks. Drill into a goal to see its
+/// sub-goals; mark daily tasks done as you finish them.
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
 
@@ -89,7 +89,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
   GoalLevel _levelBelow(GoalLevel l) => switch (l) {
         GoalLevel.lifetime => GoalLevel.yearly,
         GoalLevel.yearly => GoalLevel.monthly,
-        GoalLevel.monthly => GoalLevel.daily,
+        GoalLevel.monthly => GoalLevel.weekly,
+        GoalLevel.weekly => GoalLevel.daily,
         GoalLevel.daily => GoalLevel.lifetime,
       };
 
@@ -99,6 +100,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
       GoalLevel.lifetime => 'New lifetime goal',
       GoalLevel.yearly => 'Add yearly goal',
       GoalLevel.monthly => 'Add monthly goal',
+      GoalLevel.weekly => 'Add weekly goal',
       GoalLevel.daily => 'Add daily task',
     };
   }
@@ -106,7 +108,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
   bool get _canAdd => _stack.isEmpty || _stack.last.childLevel != null;
 
   Future<void> _createCurrentLevel() async {
-    final result = await showModalBottomSheet<({String title, String desc})>(
+    final result = await showModalBottomSheet<
+        ({String title, String desc, DateTime? dueDate})>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -117,7 +120,11 @@ class _GoalsScreenState extends State<GoalsScreen> {
     );
     if (result == null || !mounted) return;
     try {
-      await _svc.createGoal(title: result.title, description: result.desc);
+      await _svc.createGoal(
+        title: result.title,
+        description: result.desc,
+        dueDate: result.dueDate,
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +136,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
   }
 
   Future<void> _createChild(Goal parent) async {
-    final result = await showModalBottomSheet<({String title, String desc})>(
+    final result = await showModalBottomSheet<
+        ({String title, String desc, DateTime? dueDate})>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -141,6 +149,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         parentId: parent.id,
         title: result.title,
         description: result.desc,
+        dueDate: result.dueDate,
       );
     } catch (e) {
       if (!mounted) return;
@@ -153,7 +162,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
   }
 
   Future<void> _editGoal(Goal goal) async {
-    final result = await showModalBottomSheet<({String title, String desc})>(
+    final result = await showModalBottomSheet<
+        ({String title, String desc, DateTime? dueDate})>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -161,6 +171,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         heading: 'Edit ${goal.levelLabel.toLowerCase()}',
         initialTitle: goal.title,
         initialDesc: goal.description,
+        initialDue: goal.dueDate,
       ),
     );
     if (result == null || !mounted) return;
@@ -169,6 +180,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         id: goal.id,
         title: result.title,
         description: result.desc,
+        dueDate: result.dueDate,
       );
     } catch (e) {
       if (!mounted) return;
@@ -332,7 +344,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
   String _emptyMessage() {
     if (_stack.isEmpty) {
       return 'Plan the big things you want in life, then split them into '
-          'yearly, monthly and daily steps.';
+          'yearly, monthly, weekly and daily steps.';
     }
     final parent = _stack.last;
     return 'Add ${parent.childLevel?.name ?? 'a task'} under '
@@ -409,6 +421,20 @@ class _GoalTile extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         _chip(theme, goal.levelLabel),
+                        if (goal.dueDate != null)
+                          _chip(
+                            theme,
+                            'Due ${_formatDate(goal.dueDate!)}',
+                            Icon(
+                              _isOverdue(goal.dueDate!, goal.completed)
+                                  ? Icons.warning_amber
+                                  : Icons.event,
+                              size: 14,
+                              color: _isOverdue(goal.dueDate!, goal.completed)
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.primary,
+                            ),
+                          ),
                         if (hasChildren)
                           _chip(
                             theme,
@@ -487,6 +513,20 @@ class _GoalTile extends StatelessWidget {
     );
   }
 
+  static String _formatDate(DateTime d) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[d.month - 1]} ${d.day}, ${d.year}';
+  }
+
+  static bool _isOverdue(DateTime due, bool completed) {
+    if (completed) return false;
+    final now = DateTime.now();
+    return due.isBefore(DateTime(now.year, now.month, now.day));
+  }
+
   Widget _chip(ThemeData theme, String text, [Icon? leading]) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -510,12 +550,14 @@ class _GoalEditor extends StatefulWidget {
     required this.heading,
     this.initialTitle,
     this.initialDesc,
+    this.initialDue,
     this.level,
   });
 
   final String heading;
   final String? initialTitle;
   final String? initialDesc;
+  final DateTime? initialDue;
   final GoalLevel? level;
 
   @override
@@ -525,12 +567,14 @@ class _GoalEditor extends StatefulWidget {
 class _GoalEditorState extends State<_GoalEditor> {
   late final TextEditingController _titleCtrl;
   late final TextEditingController _descCtrl;
+  late DateTime? _dueDate;
 
   @override
   void initState() {
     super.initState();
     _titleCtrl = TextEditingController(text: widget.initialTitle ?? '');
     _descCtrl = TextEditingController(text: widget.initialDesc ?? '');
+    _dueDate = widget.initialDue;
   }
 
   @override
@@ -538,6 +582,27 @@ class _GoalEditorState extends State<_GoalEditor> {
     _titleCtrl.dispose();
     _descCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickDueDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 20),
+      helpText: 'When should this be done?',
+    );
+    if (picked == null) return;
+    setState(() => _dueDate = picked);
+  }
+
+  static String _formatDue(DateTime d) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[d.month - 1]} ${d.day}, ${d.year}';
   }
 
   void _save() {
@@ -548,7 +613,10 @@ class _GoalEditorState extends State<_GoalEditor> {
       );
       return;
     }
-    Navigator.pop(context, (title: title, desc: _descCtrl.text.trim()));
+    Navigator.pop(
+      context,
+      (title: title, desc: _descCtrl.text.trim(), dueDate: _dueDate),
+    );
   }
 
   @override
@@ -602,6 +670,27 @@ class _GoalEditorState extends State<_GoalEditor> {
                 alignLabelWithHint: true,
                 isDense: true,
               ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _pickDueDate,
+                  icon: const Icon(Icons.event_outlined),
+                  label: Text(
+                    _dueDate == null
+                        ? 'No deadline'
+                        : 'Due ${_formatDue(_dueDate!)}',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (_dueDate != null)
+                  IconButton(
+                    tooltip: 'Clear deadline',
+                    icon: const Icon(Icons.close),
+                    onPressed: () => setState(() => _dueDate = null),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
             SizedBox(
