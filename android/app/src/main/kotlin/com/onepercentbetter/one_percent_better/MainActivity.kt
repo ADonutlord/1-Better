@@ -108,9 +108,9 @@ class MainActivity : FlutterActivity() {
                 )
                 val byPackage = HashMap<String, Long>()
                 for (s in stats) {
-                    if (s.totalTimeInMillis > 0L) {
+                    if (totalActiveTime(s) > 0L) {
                         byPackage[s.packageName] =
-                            (byPackage[s.packageName] ?: 0L) + s.totalTimeInMillis
+                            (byPackage[s.packageName] ?: 0L) + totalActiveTime(s)
                     }
                 }
                 if (byPackage.isEmpty()) continue
@@ -142,6 +142,24 @@ class MainActivity : FlutterActivity() {
             result.success(out)
         } catch (e: Exception) {
             result.error("USAGE_QUERY_FAILED", e.message, null)
+        }
+    }
+
+    // Total foreground time for a UsageStats entry. On Android 11+ use the
+    // modern API; on Android 7-10 the legacy public field (removed from the
+    // SDK as of API 36, so it's read reflectively there) reports the same.
+    private fun totalActiveTime(s: android.app.usage.UsageStats): Long {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            s.getTotalTimeInForeground()
+        } else {
+            try {
+                val field = android.app.usage.UsageStats::class.java
+                    .getField("totalTimeInMillis")
+                field.getLong(s)
+            } catch (e: Exception) {
+                // Very old or odd devices: fall back to the last-used timestamp.
+                s.lastTimeUsed - s.firstTimeStamp
+            }.coerceAtLeast(0L)
         }
     }
 
