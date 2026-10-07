@@ -15,6 +15,7 @@ class TreeGrowthIndicator extends StatefulWidget {
     this.size = 120,
     this.background = false,
     this.backgroundAnchor = 0.0,
+    this.animate = true,
   });
 
   /// 0.0 (seedling) to 1.0 (fully grown).
@@ -24,6 +25,10 @@ class TreeGrowthIndicator extends StatefulWidget {
 
   /// How far the background tree is raised from the bottom edge.
   final double backgroundAnchor;
+
+  /// When false the tree holds a still pose: no wind sway and no growth
+  /// animation (used by the "Live Wallpaper" toggle being switched off).
+  final bool animate;
 
   @override
   State<TreeGrowthIndicator> createState() => _TreeGrowthIndicatorState();
@@ -45,21 +50,43 @@ class _TreeGrowthIndicatorState extends State<TreeGrowthIndicator>
     _ambient = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3600),
-    )..repeat();
-    _growth.animateTo(
-      widget.growth.clamp(0.0, 1.0),
-      curve: Curves.easeOutCubic,
+      value: widget.animate ? 0 : _stillPose,
     );
-  }
-
-  @override
-  void didUpdateWidget(covariant TreeGrowthIndicator oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.growth != widget.growth) {
+    if (widget.animate) _ambient.repeat();
+    if (widget.animate) {
       _growth.animateTo(
         widget.growth.clamp(0.0, 1.0),
         curve: Curves.easeOutCubic,
       );
+    } else {
+      _growth.value = widget.growth.clamp(0.0, 1.0);
+    }
+  }
+
+  /// A calm mid-sway pose used when the tree is not animating.
+  static const _stillPose = 0.28;
+
+  @override
+  void didUpdateWidget(covariant TreeGrowthIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.animate != widget.animate) {
+      if (widget.animate) {
+        _ambient.repeat();
+      } else {
+        _ambient
+          ..stop()
+          ..value = _stillPose;
+      }
+    }
+    if (oldWidget.growth != widget.growth) {
+      if (widget.animate) {
+        _growth.animateTo(
+          widget.growth.clamp(0.0, 1.0),
+          curve: Curves.easeOutCubic,
+        );
+      } else {
+        _growth.value = widget.growth.clamp(0.0, 1.0);
+      }
     }
   }
 

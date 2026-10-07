@@ -2,10 +2,13 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_state.dart';
+import '../../core/backdrop_controller.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme_controller.dart';
 import '../../models/models.dart';
+import '../../services/ambient_sound_service.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/theme_switcher.dart';
 import '../../widgets/xp_bar.dart';
 import '../auth/delete_account_screen.dart';
 import '../community/community_feed_screen.dart';
@@ -754,6 +757,7 @@ class _ThemeModeSheet extends StatefulWidget {
 
 class _ThemeModeSheetState extends State<_ThemeModeSheet> {
   final ThemeController _theme = ThemeController.instance;
+  final BackdropController _backdrop = BackdropController.instance;
 
   Future<void> _onLiquidChanged(bool enabled) async {
     if (enabled) {
@@ -789,86 +793,205 @@ class _ThemeModeSheetState extends State<_ThemeModeSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Appearance',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Choose how the app looks.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListenableBuilder(
-              listenable: _theme,
-              builder: (context, _) {
-                final mode = _theme.mode;
-                return SegmentedButton<ThemeMode>(
-                  segments: const [
-                    ButtonSegment(
-                      value: ThemeMode.system,
-                      label: Text('System'),
-                      icon: Icon(Icons.brightness_auto),
-                    ),
-                    ButtonSegment(
-                      value: ThemeMode.light,
-                      label: Text('Light'),
-                      icon: Icon(Icons.light_mode_outlined),
-                    ),
-                    ButtonSegment(
-                      value: ThemeMode.dark,
-                      label: Text('Dark'),
-                      icon: Icon(Icons.dark_mode_outlined),
-                    ),
-                  ],
-                  selected: {mode},
-                  onSelectionChanged: (selection) =>
-                      _theme.setMode(selection.first),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            ListenableBuilder(
-              listenable: _theme,
-              builder: (context, _) => SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.water_drop_outlined),
-                title: const Text(
-                  'Liquid Glass',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Appearance',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
-                subtitle: const Text('Frosted translucent surfaces, like iOS.'),
-                value: _theme.liquid,
-                onChanged: _onLiquidChanged,
               ),
-            ),
-            ListenableBuilder(
-              listenable: _theme,
-              builder: (context, _) => SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.blur_on),
-                title: const Text(
-                  'Gaussian Blur',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+              const SizedBox(height: 4),
+              Text(
+                'Choose how the app looks.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                subtitle: const Text(
-                  'Real backdrop blur for the glass surfaces.',
-                ),
-                value: _theme.blur,
-                onChanged: _theme.liquid ? _theme.setBlur : null,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              ListenableBuilder(
+                listenable: _theme,
+                builder: (context, _) {
+                  final mode = _theme.mode;
+                  return SegmentedButton<ThemeMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text('System'),
+                        icon: Icon(Icons.brightness_auto),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text('Light'),
+                        icon: Icon(Icons.light_mode_outlined),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text('Dark'),
+                        icon: Icon(Icons.dark_mode_outlined),
+                      ),
+                    ],
+                    selected: {mode},
+                    onSelectionChanged: (selection) =>
+                        _theme.setMode(selection.first),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              ListenableBuilder(
+                listenable: _theme,
+                builder: (context, _) => SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.water_drop_outlined),
+                  title: const Text(
+                    'Liquid Glass',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: const Text(
+                    'Frosted translucent surfaces, like iOS.',
+                  ),
+                  value: _theme.liquid,
+                  onChanged: _onLiquidChanged,
+                ),
+              ),
+              ListenableBuilder(
+                listenable: _theme,
+                builder: (context, _) => SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.blur_on),
+                  title: const Text(
+                    'Gaussian Blur',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: const Text(
+                    'Real backdrop blur for the glass surfaces.',
+                  ),
+                  value: _theme.blur,
+                  onChanged: _theme.liquid ? _theme.setBlur : null,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListenableBuilder(
+                listenable: Listenable.merge([
+                  _backdrop,
+                  AppState.instance,
+                  AmbientSoundService.instance,
+                ]),
+                builder: (context, _) {
+                  final mood = AppState.instance.loop?.latestMood?.mood;
+                  final rainLocked = !BackdropController.rainAllowed(mood);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        secondary: const Icon(Icons.animation),
+                        title: const Text(
+                          'Live Wallpaper',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        subtitle: const Text(
+                          'Animate the tree, sky and weather behind the app.',
+                        ),
+                        value: _backdrop.enabled,
+                        onChanged: _backdrop.setEnabled,
+                      ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        secondary: const Icon(Icons.music_note),
+                        title: const Text(
+                          'Ambient Sounds',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        subtitle: const Text(
+                          'Play the soundscape that matches your theme.',
+                        ),
+                        value: AmbientSoundService.instance.enabled,
+                        onChanged: (value) async {
+                          await AmbientSoundService.instance.setEnabled(value);
+                          await AmbientSoundService.instance.sync(
+                            _backdrop.scene,
+                          );
+                          final error = AmbientSoundService.instance.lastError;
+                          if (error != null && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Ambient sound could not start — $error',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4, bottom: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Background',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'The scenery behind your tree. It gains more '
+                              'detail as you level up.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final scene in BackdropScene.values)
+                                  ChoiceChip(
+                                    selected: _backdrop.scene == scene,
+                                    // Always goes through the switcher so
+                                    // the rain rule and the ambient-sounds
+                                    // question apply on every change.
+                                    onSelected: (_) =>
+                                        switchBackdropScene(context, scene),
+                                    avatar: Icon(scene.icon, size: 18),
+                                    label: Text(
+                                      BackdropController.sceneAllowed(
+                                            scene,
+                                            mood,
+                                          )
+                                          ? scene.label
+                                          : '🔒 ${scene.label}',
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            if (rainLocked) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                '🔒 Rain unlocks after a low-mood check-in '
+                                '(sad, tired, gloomy...).',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

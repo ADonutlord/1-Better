@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_state.dart';
+import '../../core/backdrop_controller.dart';
 import '../../core/constants/app_constants.dart';
 import '../../models/models.dart';
 import '../../services/action_service.dart';
+import '../../services/ambient_sound_service.dart';
 import '../../widgets/action_card.dart';
+import '../../widgets/theme_switcher.dart';
 import '../../widgets/xp_bar.dart';
 import '../focus/focus_timer_screen.dart';
 import '../home/mood_screen.dart';
@@ -81,13 +84,67 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkInMood() async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const MoodScreen()),
-    );
+    // The mood locks for the day the moment today's 1% is completed.
+    if (_app.loop?.dailyProgress?.moodLocked ?? false) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Your mood is locked for today — your 1% is already done. '
+            'You can check in again tomorrow.',
+          ),
+        ),
+      );
+      return;
+    }
+    final result = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const MoodScreen()));
     if (result == true) {
       await _app.loadDailyLoop();
       await _ensureDailyAction(regenerate: true);
+      if (!mounted) return;
+      await _offerRainComfort();
     }
+  }
+
+  /// After a low-mood check-in, offer the comfort pairing the rain theme was
+  /// made for: rain scenery with gentle rain sounds. Only asked when it would
+  /// actually change something, so it never nags once accepted (or while rain
+  /// is already showing).
+  Future<void> _offerRainComfort() async {
+    final mood = _app.loop?.latestMood?.mood;
+    if (!BackdropController.rainAllowed(mood)) return;
+    final controller = BackdropController.instance;
+    final sounds = AmbientSoundService.instance;
+    if (controller.scene == BackdropScene.rain && sounds.enabled) return;
+    if (!mounted) return;
+
+    final take = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('A softer backdrop?'),
+        content: const Text(
+          'You checked in feeling low. Want the rain theme behind your tree, '
+          'with gentle rain sounds while you use the app?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('No thanks'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Rain + sounds'),
+          ),
+        ],
+      ),
+    );
+    if (take != true) return;
+
+    await controller.setScene(BackdropScene.rain);
+    await sounds.setEnabled(true);
+    await sounds.sync(BackdropScene.rain);
   }
 
   Future<void> _completeAction(AppAction action) async {
@@ -96,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Complete your 1%?'),
         content: Text(
-            '"${action.title}" — small step, real progress.\n\nTake a moment to actually do it.'),
+          '"${action.title}" — small step, real progress.\n\nTake a moment to actually do it.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -121,9 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
       await _app.loadDailyLoop();
     }
   }
@@ -175,9 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openTalk() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const TalkToSomeoneFlow()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TalkToSomeoneFlow()));
     await _app.loadDailyLoop();
   }
 }
@@ -208,20 +264,36 @@ class _HomeBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
-        Text(
-          '${greeting()}, ${profile.displayName} 👋',
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'One small step is enough today.',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${greeting()}, ${profile.displayName} 👋',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'One small step is enough today.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Switch the home-screen theme (day/night, sunshine/rain).
+            IconButton(
+              tooltip: 'Change theme',
+              onPressed: () => openThemeSwitcher(context),
+              icon: const Icon(Icons.wallpaper_outlined),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
 
@@ -259,7 +331,11 @@ class _HomeBody extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _stat(profile.currentStreak, '🔥 streak', Theme.of(context)),
+                    _stat(
+                      profile.currentStreak,
+                      '🔥 streak',
+                      Theme.of(context),
+                    ),
                     _stat(profile.level, '🌱 level', Theme.of(context)),
                     _stat(profile.totalXp, '⭐ xp', Theme.of(context)),
                   ],
@@ -280,12 +356,18 @@ class _HomeBody extends StatelessWidget {
   Widget _stat(int value, String label, ThemeData theme) {
     return Column(
       children: [
-        Text('$value',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        Text(label,
-            style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant)),
+        Text(
+          '$value',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }
@@ -309,10 +391,13 @@ class _MoodCard extends StatelessWidget {
     final theme = Theme.of(context);
     final mood = loop.latestMood;
     final done = loop.dailyProgress?.moodCompleted ?? false;
+    final locked = loop.dailyProgress?.moodLocked ?? false;
 
     return Card(
       child: InkWell(
-        onTap: onTap,
+        // Locked once today's 1% is complete: the card stops opening the
+        // check-in and says why instead.
+        onTap: locked ? null : onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -321,13 +406,27 @@ class _MoodCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text('How are you feeling?',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'How are you feeling?',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const Spacer(),
                   if (done)
-                    Icon(Icons.check_circle,
-                        color: theme.colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.check_circle,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                  if (locked) ...[
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.lock_outline,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      size: 18,
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 16),
@@ -338,6 +437,16 @@ class _MoodCard extends StatelessWidget {
                     _emoji(group.first, mood?.mood == group.first, theme),
                 ],
               ),
+              if (locked) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '🔒 Locked for today — your 1% is done. '
+                  'You can check in again tomorrow.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -394,23 +503,30 @@ class _TalkCard extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.support_agent,
-                    color: Colors.white, size: 28),
+                child: const Icon(
+                  Icons.support_agent,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('💬 Talk to someone',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: theme.colorScheme.primary)),
+                    Text(
+                      '💬 Talk to someone',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       'Connect privately with a real person who can listen.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer),
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ],
                 ),
@@ -456,22 +572,30 @@ class _TodayActionCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('🌱 Your 1% today',
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w800)),
+                Text(
+                  '🌱 Your 1% today',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 if (loop.todayAction?.source == 'peer') ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('recommended by a peer',
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: theme.colorScheme.onPrimaryContainer)),
+                    child: Text(
+                      'recommended by a peer',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
                   ),
                 ],
               ],
@@ -501,7 +625,8 @@ class _TodayActionCard extends StatelessWidget {
               Text(
                 'Your progress is still here — no pressure, just do it when you can.',
                 style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant),
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ],
@@ -533,7 +658,8 @@ class _ActionEmpty extends StatelessWidget {
               ? 'Check in how you\'re feeling first — your 1% is picked for your exact mood.'
               : 'Get today\'s personalized 1% action — picked for how you feel.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12),
         SizedBox(
@@ -570,19 +696,26 @@ class _ActionDone extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.celebration_outlined,
-              color: theme.colorScheme.onPrimaryContainer, size: 36),
+          Icon(
+            Icons.celebration_outlined,
+            color: theme.colorScheme.onPrimaryContainer,
+            size: 36,
+          ),
           const SizedBox(height: 10),
-          Text('Today\'s 1% done — “${action.title}”.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            'Today\'s 1% done — “${action.title}”.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 6),
           Text(
             'Come back tomorrow for a new one. Small help, big impact.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -611,14 +744,16 @@ class _DailyChecklist extends StatelessWidget {
             color: done ? theme.colorScheme.primary : theme.colorScheme.outline,
           ),
           const SizedBox(width: 10),
-          Text(label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: done
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: done ? FontWeight.w700 : FontWeight.w500,
-                decoration: done ? TextDecoration.lineThrough : null,
-              )),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: done
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+              fontWeight: done ? FontWeight.w700 : FontWeight.w500,
+              decoration: done ? TextDecoration.lineThrough : null,
+            ),
+          ),
         ],
       );
     }
@@ -629,9 +764,13 @@ class _DailyChecklist extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('TODAY',
-                style: theme.textTheme.labelLarge
-                    ?.copyWith(letterSpacing: 1.2, fontWeight: FontWeight.w800)),
+            Text(
+              'TODAY',
+              style: theme.textTheme.labelLarge?.copyWith(
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             const SizedBox(height: 12),
             row(Icons.mood_outlined, 'Mood check-in', mood),
             const SizedBox(height: 10),
@@ -666,17 +805,26 @@ class _CompletionDialog extends StatelessWidget {
         children: [
           const Text('🌱', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 12),
-          Text('+$xp XP',
-              style: theme.textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w800)),
+          Text(
+            '+$xp XP',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
           const SizedBox(height: 6),
-          Text('+$base XP + $bonus streak bonus 🔥',
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            '+$base XP + $bonus streak bonus 🔥',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('🔥 $streak day streak',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            '🔥 $streak day streak',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 10),
           const Text(
             'One small step done. Come back tomorrow for your next 1%.',

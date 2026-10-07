@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../core/app_state.dart';
 import '../../services/study_lockdown_service.dart';
 import '../../services/study_service.dart';
 
@@ -58,7 +59,8 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
       _releaseLock();
     }
   }
@@ -115,21 +117,31 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
                 style: TextStyle(height: 1.4),
               ),
               SizedBox(height: 12),
-              Text('What it does',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              Text(
+                'What it does',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
               SizedBox(height: 6),
-              Text('• Blocks other apps while the timer runs\n'
-                  '• Blocks the notification shade & home button\n'
-                  '• Keeps your personal details hidden on the lock screen'),
+              Text(
+                '• Blocks other apps while the timer runs\n'
+                '• Blocks the notification shade & home button\n'
+                '• Keeps your personal details hidden on the lock screen',
+              ),
               SizedBox(height: 12),
-              Text('What still works',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              Text(
+                'What still works',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
               SizedBox(height: 6),
-              Text('• Incoming calls still ring and can be answered\n'
-                  '• You can make a call from the timer screen'),
+              Text(
+                '• Incoming calls still ring and can be answered\n'
+                '• You can make a call from the timer screen',
+              ),
               SizedBox(height: 12),
-              Text('How to end it early',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              Text(
+                'How to end it early',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
               SizedBox(height: 6),
               Text('Hold Back + Overview together, then un-check "Pin".'),
             ],
@@ -215,12 +227,18 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
     var earnedXp = 0;
     if (started != null && _remaining == 0) {
       try {
-        earnedXp = await _study.recordSession(startedAt: started, endedAt: ended);
+        earnedXp = await _study.recordSession(
+          startedAt: started,
+          endedAt: ended,
+        );
+        // Refresh the daily loop so the XP bar, level and the tree behind the
+        // app update right away instead of on the next launch.
+        if (earnedXp > 0) await AppState.instance.loadDailyLoop();
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not save session: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Could not save session: $e')));
         }
       }
     }
@@ -241,8 +259,10 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
           children: [
             const Text('📚', style: TextStyle(fontSize: 44)),
             const SizedBox(height: 12),
-            const Text('Study session complete!',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+            const Text(
+              'Study session complete!',
+              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+            ),
             const SizedBox(height: 8),
             Text(
               xp > 0
@@ -280,9 +300,12 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              Text('How long?',
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(fontWeight: FontWeight.w800)),
+              Text(
+                'How long?',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -302,14 +325,21 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
                   padding: const EdgeInsets.all(28),
                   child: Column(
                     children: [
-                      Text('STUDY',
-                          style: theme.textTheme.labelLarge?.copyWith(
-                              letterSpacing: 3, fontWeight: FontWeight.w800)),
+                      Text(
+                        'STUDY',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          letterSpacing: 3,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                       const SizedBox(height: 18),
-                      Text('$minutes:$seconds',
-                          style: theme.textTheme.displayMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontFeatures: const [FontFeature.tabularFigures()])),
+                      Text(
+                        '$minutes:$seconds',
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
                       const SizedBox(height: 18),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -338,8 +368,13 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
                               FilledButton.icon(
                                 onPressed: _remaining == 0 ? _reset : _start,
                                 icon: Icon(
-                                    _remaining == 0 ? Icons.refresh : Icons.play_arrow),
-                                label: Text(_remaining == 0 ? 'Start again' : 'Start'),
+                                  _remaining == 0
+                                      ? Icons.refresh
+                                      : Icons.play_arrow,
+                                ),
+                                label: Text(
+                                  _remaining == 0 ? 'Start again' : 'Start',
+                                ),
                               ),
                             const SizedBox(width: 12),
                             OutlinedButton.icon(
@@ -358,13 +393,15 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
               const SizedBox(height: 16),
               SwitchListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                title: const Text('Lock down my phone',
-                    style: TextStyle(fontWeight: FontWeight.w700)),
+                title: const Text(
+                  'Lock down my phone',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
                 subtitle: Text(
                   _locked
                       ? 'Lockdown active — you can only answer calls.'
                       : 'Blocks other apps & notifications while you study. '
-                          'Incoming calls still ring.',
+                            'Incoming calls still ring.',
                   style: theme.textTheme.bodySmall,
                 ),
                 value: _locked,
@@ -388,8 +425,9 @@ class _StudyTimerScreenState extends State<StudyTimerScreen>
                     'again and re-enable lockdown.\n\nTip: to end phone lockdown '
                     'early, hold Back + the Overview button, then un-check pin.',
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],

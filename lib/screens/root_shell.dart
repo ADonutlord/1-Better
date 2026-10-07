@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 
 import '../core/app_state.dart';
+import '../core/backdrop_controller.dart';
 import '../core/theme_controller.dart';
 import '../logic/level_calculator.dart';
 import '../screens/chat/chat_list_screen.dart';
@@ -12,7 +13,7 @@ import '../screens/home/home_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/progress/progress_screen.dart';
 import '../screens/study/study_screen.dart';
-import '../widgets/tree.dart';
+import '../widgets/live_backdrop.dart';
 
 /// Responsive shell: bottom NavigationBar on phones, NavigationRail on desktop.
 class RootShell extends StatefulWidget {
@@ -41,19 +42,27 @@ class _RootShellState extends State<RootShell> {
     ];
   }
 
-  /// The animated growth tree filling the whole screen behind the chrome,
-  /// gaussian-blurred when the Liquid Glass theme is active.
+  /// The live wallpaper: a themed sky, the growth tree and drifting weather
+  /// behind the chrome, gaussian-blurred when the Liquid Glass theme is on.
+  /// The scenery follows the user's level, and both the theme and its ambient
+  /// sounds can be switched from the home screen (phone and desktop).
   Widget _backdrop() {
     return ListenableBuilder(
-      listenable: Listenable.merge([_app, ThemeController.instance]),
+      listenable: Listenable.merge([
+        _app,
+        ThemeController.instance,
+        BackdropController.instance,
+      ]),
       builder: (context, _) {
         final theme = Theme.of(context);
         final liquid = ThemeController.instance.liquid;
         final blur = ThemeController.instance.blur;
-        final tree = TreeGrowthIndicator(
+        final backdrop = LiveBackdrop(
           growth: LevelCalculator.treeGrowth(_app.loop?.profile.totalXp ?? 0),
-          background: true,
-          backgroundAnchor: 0.1,
+          level: _app.loop?.profile.level ?? 1,
+          levelUps: _app.levelUps,
+          enabled: BackdropController.instance.enabled,
+          scene: BackdropController.instance.scene,
         );
         // Paint a theme-adaptive full background behind the tree. Without this
         // the transparent outer scaffold would show the black window behind it
@@ -64,10 +73,7 @@ class _RootShellState extends State<RootShell> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Transform.translate(
-                offset: const Offset(24, 0),
-                child: tree,
-              ),
+              backdrop,
               if (liquid && blur)
                 ClipRect(
                   child: BackdropFilter(
@@ -83,7 +89,7 @@ class _RootShellState extends State<RootShell> {
   }
 
   /// Text/icon color for the nav chrome, picked from the luminance of whatever
-  /// shows through the chrome surface behind it (the growth tree).
+  /// shows through the chrome surface behind it (the live wallpaper scene).
   Color _chromeTextColor(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -93,11 +99,13 @@ class _RootShellState extends State<RootShell> {
     final chrome = isDark
         ? (liquid ? const Color(0xB3161D18) : const Color(0xFF1D2620))
         : (liquid ? const Color(0xB3F4F8F5) : const Color(0xFFF5F9F6));
-    final foliage = isDark ? const Color(0xFF2E7D32) : const Color(0xFF43A047);
-    final backdrop = Color.alphaBlend(
-      chrome,
-      Color.lerp(theme.colorScheme.surface, foliage, growth.clamp(0.0, 1.0))!,
+    final tone = ScenePalette.chromeTone(
+      BackdropController.instance.scene,
+      isDark: isDark,
+      growth: growth,
+      surface: theme.colorScheme.surface,
     );
+    final backdrop = Color.alphaBlend(chrome, tone);
     return backdrop.computeLuminance() > 0.45
         ? const Color(0xFF16221A)
         : Colors.white;
@@ -240,8 +248,7 @@ class _RootShellState extends State<RootShell> {
               IconButton(
                 tooltip: 'Menu',
                 icon: Icon(Icons.menu, color: chromeColor),
-                onPressed: () =>
-                    _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
               ),
               Expanded(
                 child: Center(
@@ -312,8 +319,7 @@ class _RootShellState extends State<RootShell> {
                     for (var i = 0; i < destinations.length; i++)
                       ListTile(
                         selected: i == _index,
-                        selectedTileColor:
-                            theme.colorScheme.primaryContainer,
+                        selectedTileColor: theme.colorScheme.primaryContainer,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

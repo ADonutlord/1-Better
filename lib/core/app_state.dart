@@ -23,6 +23,23 @@ class AppState extends ChangeNotifier {
 
   bool get signedIn => user != null;
 
+  /// Number of times the profile level has gone up this session. The live
+  /// wallpaper watches this to celebrate, and the tree re-animates through the
+  /// usual [notifyListeners].
+  int _levelUps = 0;
+  int get levelUps => _levelUps;
+
+  int? _knownLevel;
+
+  /// Records the level, counting an increase as a level up. The first level we
+  /// ever see is just a baseline, not a level up.
+  void _trackLevel(int? level) {
+    if (level == null) return;
+    final previous = _knownLevel;
+    _knownLevel = level;
+    if (previous != null && level > previous) _levelUps++;
+  }
+
   void refreshUser() {
     notifyListeners();
   }
@@ -35,6 +52,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     try {
       _loop = await ActionService.instance.fetchDailyLoop();
+      _trackLevel(_loop?.profile.level);
     } catch (e) {
       error = e.toString();
     } finally {
@@ -53,6 +71,7 @@ class AppState extends ChangeNotifier {
       todayAction: current.todayAction,
       latestMood: current.latestMood,
     );
+    _trackLevel(profile.level);
     notifyListeners();
   }
 
@@ -64,6 +83,7 @@ class AppState extends ChangeNotifier {
       } else if (data.event == AuthChangeEvent.signedOut) {
         _loop = null;
         authors = {};
+        _knownLevel = null;
         notifyListeners();
       }
     });

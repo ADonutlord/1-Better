@@ -69,16 +69,16 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'display_name': displayName,
-        'role': role,
-        'level': level,
-        'total_xp': totalXp,
-        'current_streak': currentStreak,
-        'longest_streak': longestStreak,
-        'last_action_date': lastActionDate?.toIso8601String(),
-        'created_at': createdAt?.toIso8601String(),
-      };
+    'id': id,
+    'display_name': displayName,
+    'role': role,
+    'level': level,
+    'total_xp': totalXp,
+    'current_streak': currentStreak,
+    'longest_streak': longestStreak,
+    'last_action_date': lastActionDate?.toIso8601String(),
+    'created_at': createdAt?.toIso8601String(),
+  };
 }
 
 /// One uninterrupted study focus block. The total time studied on a given
@@ -105,12 +105,12 @@ class StudySession {
   double get durationHours => durationSeconds / 3600;
 
   factory StudySession.fromJson(Map<String, dynamic> json) => StudySession(
-        id: (json['id'] as String?) ?? '',
-        userId: (json['user_id'] as String?) ?? '',
-        startedAt: _parseDateTime(json['started_at']) ?? DateTime.now(),
-        endedAt: _parseDateTime(json['ended_at']) ?? DateTime.now(),
-        durationSeconds: (json['duration_seconds'] as int?) ?? 0,
-      );
+    id: (json['id'] as String?) ?? '',
+    userId: (json['user_id'] as String?) ?? '',
+    startedAt: _parseDateTime(json['started_at']) ?? DateTime.now(),
+    endedAt: _parseDateTime(json['ended_at']) ?? DateTime.now(),
+    durationSeconds: (json['duration_seconds'] as int?) ?? 0,
+  );
 }
 
 /// Local "minutes spent on the phone" logged by the student for one day.
@@ -156,10 +156,10 @@ class AppUsage {
   final int minutes;
 
   factory AppUsage.fromJson(Map<String, dynamic> json) => AppUsage(
-        package: (json['package'] as String?) ?? '',
-        label: (json['label'] as String?) ?? '',
-        minutes: (json['minutes'] as num?)?.toInt() ?? 0,
-      );
+    package: (json['package'] as String?) ?? '',
+    label: (json['label'] as String?) ?? '',
+    minutes: (json['minutes'] as num?)?.toInt() ?? 0,
+  );
 }
 
 /// A measured day of screen usage: total minutes plus a per-app breakdown.
@@ -178,14 +178,13 @@ class ScreenTimeDay {
   double get hours => totalMinutes / 60;
 
   factory ScreenTimeDay.fromJson(Map<String, dynamic> json) => ScreenTimeDay(
-        day: _parseDate(json['day']) ?? DateTime.now(),
-        totalMinutes: (json['totalMinutes'] as num?)?.toInt() ?? 0,
-        apps: [
-          for (final a in (json['apps'] as List? ?? const <dynamic>[]))
-            if (a is Map)
-              AppUsage.fromJson(Map<String, dynamic>.from(a)),
-        ],
-      );
+    day: _parseDate(json['day']) ?? DateTime.now(),
+    totalMinutes: (json['totalMinutes'] as num?)?.toInt() ?? 0,
+    apps: [
+      for (final a in (json['apps'] as List? ?? const <dynamic>[]))
+        if (a is Map) AppUsage.fromJson(Map<String, dynamic>.from(a)),
+    ],
+  );
 }
 
 class MoodCheckin {
@@ -194,17 +193,18 @@ class MoodCheckin {
     required this.mood,
     required this.situation,
     required this.createdAt,
-  });  final String id;
+  });
+  final String id;
   final String mood;
   final List<String> situation;
   final DateTime createdAt;
 
   factory MoodCheckin.fromJson(Map<String, dynamic> json) => MoodCheckin(
-        id: (json['id'] as String?) ?? '',
-        mood: (json['mood'] as String?) ?? 'calm',
-        situation: _stringList(json['situation']),
-        createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
-      );
+    id: (json['id'] as String?) ?? '',
+    mood: (json['mood'] as String?) ?? 'calm',
+    situation: _stringList(json['situation']),
+    createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+  );
 }
 
 class AppAction {
@@ -237,34 +237,34 @@ class AppAction {
   final bool active;
 
   factory AppAction.fromJson(Map<String, dynamic> json) => AppAction(
-        id: (json['id'] as String?) ?? '',
-        title: (json['title'] as String?) ?? '',
-        description: (json['description'] as String?) ?? '',
-        category: (json['category'] as String?) ?? '',
-        subCategory: (json['sub_category'] as String?) ?? '',
-        estimatedMinutes: (json['estimated_minutes'] as int?) ?? 5,
-        difficulty: (json['difficulty'] as int?) ?? 1,
-        requiredEnergy: (json['required_energy'] as String?) ?? 'low',
-        moodTags: _stringList(json['mood_tags']),
-        situationTags: _stringList(json['situation_tags']),
-        baseXp: (json['base_xp'] as int?) ?? 10,
-        active: (json['active'] as bool?) ?? true,
-      );
+    id: (json['id'] as String?) ?? '',
+    title: (json['title'] as String?) ?? '',
+    description: (json['description'] as String?) ?? '',
+    category: (json['category'] as String?) ?? '',
+    subCategory: (json['sub_category'] as String?) ?? '',
+    estimatedMinutes: (json['estimated_minutes'] as int?) ?? 5,
+    difficulty: (json['difficulty'] as int?) ?? 1,
+    requiredEnergy: (json['required_energy'] as String?) ?? 'low',
+    moodTags: _stringList(json['mood_tags']),
+    situationTags: _stringList(json['situation_tags']),
+    baseXp: (json['base_xp'] as int?) ?? 10,
+    active: (json['active'] as bool?) ?? true,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'category': category,
-        'sub_category': subCategory,
-        'estimated_minutes': estimatedMinutes,
-        'difficulty': difficulty,
-        'required_energy': requiredEnergy,
-        'mood_tags': moodTags,
-        'situation_tags': situationTags,
-        'base_xp': baseXp,
-        'active': active,
-      };
+    'id': id,
+    'title': title,
+    'description': description,
+    'category': category,
+    'sub_category': subCategory,
+    'estimated_minutes': estimatedMinutes,
+    'difficulty': difficulty,
+    'required_energy': requiredEnergy,
+    'mood_tags': moodTags,
+    'situation_tags': situationTags,
+    'base_xp': baseXp,
+    'active': active,
+  };
 }
 
 /// One assignment (and possibly completion) of an action for a user.
@@ -342,22 +342,22 @@ class Conversation {
   bool get isEnded => status == 'ended';
 
   factory Conversation.fromJson(Map<String, dynamic> json) => Conversation(
-        id: (json['id'] as String?) ?? '',
-        status: (json['status'] as String?) ?? 'waiting',
-        createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
-        startedAt: _parseDateTime(json['started_at']),
-        endedAt: _parseDateTime(json['ended_at']),
-        assignedActionId: json['assigned_action_id'] as String?,
-      );
+    id: (json['id'] as String?) ?? '',
+    status: (json['status'] as String?) ?? 'waiting',
+    createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+    startedAt: _parseDateTime(json['started_at']),
+    endedAt: _parseDateTime(json['ended_at']),
+    assignedActionId: json['assigned_action_id'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'status': status,
-        'created_at': createdAt.toIso8601String(),
-        'started_at': startedAt?.toIso8601String(),
-        'ended_at': endedAt?.toIso8601String(),
-        'assigned_action_id': assignedActionId,
-      };
+    'id': id,
+    'status': status,
+    'created_at': createdAt.toIso8601String(),
+    'started_at': startedAt?.toIso8601String(),
+    'ended_at': endedAt?.toIso8601String(),
+    'assigned_action_id': assignedActionId,
+  };
 }
 
 class ConversationParticipant {
@@ -388,8 +388,8 @@ class ConversationParticipant {
     final profile = json['profiles'] is Map<String, dynamic>
         ? json['profiles'] as Map<String, dynamic>
         : json['profile'] is Map<String, dynamic>
-            ? json['profile'] as Map<String, dynamic>
-            : null;
+        ? json['profile'] as Map<String, dynamic>
+        : null;
     if (profile != null) {
       name = profile['display_name'] as String?;
       profession = profile['profession'] as String?;
@@ -433,13 +433,13 @@ class ChatMessage {
   bool get isActionRecommendation => messageType == 'action_recommendation';
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-        id: (json['id'] as String?) ?? '',
-        conversationId: (json['conversation_id'] as String?) ?? '',
-        senderId: (json['sender_id'] as String?) ?? '',
-        message: (json['message'] as String?) ?? '',
-        messageType: (json['message_type'] as String?) ?? 'text',
-        createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
-      );
+    id: (json['id'] as String?) ?? '',
+    conversationId: (json['conversation_id'] as String?) ?? '',
+    senderId: (json['sender_id'] as String?) ?? '',
+    message: (json['message'] as String?) ?? '',
+    messageType: (json['message_type'] as String?) ?? 'text',
+    createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+  );
 }
 
 class DailyProgress {
@@ -461,16 +461,20 @@ class DailyProgress {
   final bool actionCompleted;
   final int xpAwarded;
 
+  /// Once today's 1% is complete, the mood check-in is locked for the rest of
+  /// the day so a finished task can't be re-decided against a changed mood.
+  /// A fresh check-in opens again tomorrow.
+  bool get moodLocked => actionCompleted;
+
   factory DailyProgress.fromJson(Map<String, dynamic> json) => DailyProgress(
-        userId: (json['user_id'] as String?) ?? '',
-        date: _parseDate(json['date']) ?? DateTime.now(),
-        moodCompleted: (json['mood_completed'] as bool?) ?? false,
-        conversationCompleted:
-            (json['conversation_completed'] as bool?) ?? false,
-        actionId: json['action_id'] as String?,
-        actionCompleted: (json['action_completed'] as bool?) ?? false,
-        xpAwarded: (json['xp_awarded'] as int?) ?? 0,
-      );
+    userId: (json['user_id'] as String?) ?? '',
+    date: _parseDate(json['date']) ?? DateTime.now(),
+    moodCompleted: (json['mood_completed'] as bool?) ?? false,
+    conversationCompleted: (json['conversation_completed'] as bool?) ?? false,
+    actionId: json['action_id'] as String?,
+    actionCompleted: (json['action_completed'] as bool?) ?? false,
+    xpAwarded: (json['xp_awarded'] as int?) ?? 0,
+  );
 }
 
 class DailyLoop {
@@ -495,8 +499,14 @@ class DailyLoop {
       profile: profileJson is Map<String, dynamic>
           ? UserProfile.fromJson(profileJson)
           : const UserProfile(
-              id: '', displayName: '', role: 'member', level: 1, totalXp: 0,
-              currentStreak: 0, longestStreak: 0),
+              id: '',
+              displayName: '',
+              role: 'member',
+              level: 1,
+              totalXp: 0,
+              currentStreak: 0,
+              longestStreak: 0,
+            ),
       dailyProgress: progressJson is Map<String, dynamic>
           ? DailyProgress.fromJson(progressJson)
           : null,
@@ -543,39 +553,38 @@ class Goal {
 
   /// The goal level directly below this one, or null for daily (a leaf).
   GoalLevel? get childLevel => switch (level) {
-        GoalLevel.lifetime => GoalLevel.yearly,
-        GoalLevel.yearly => GoalLevel.monthly,
-        GoalLevel.monthly => GoalLevel.weekly,
-        GoalLevel.weekly => GoalLevel.daily,
-        GoalLevel.daily => null,
-      };
+    GoalLevel.lifetime => GoalLevel.yearly,
+    GoalLevel.yearly => GoalLevel.monthly,
+    GoalLevel.monthly => GoalLevel.weekly,
+    GoalLevel.weekly => GoalLevel.daily,
+    GoalLevel.daily => null,
+  };
 
   String get levelLabel => switch (level) {
-        GoalLevel.lifetime => 'Lifetime goal',
-        GoalLevel.yearly => 'Yearly',
-        GoalLevel.monthly => 'Monthly',
-        GoalLevel.weekly => 'Weekly',
-        GoalLevel.daily => 'Daily',
-      };
+    GoalLevel.lifetime => 'Lifetime goal',
+    GoalLevel.yearly => 'Yearly',
+    GoalLevel.monthly => 'Monthly',
+    GoalLevel.weekly => 'Weekly',
+    GoalLevel.daily => 'Daily',
+  };
 
   factory Goal.fromJson(Map<String, dynamic> json) => Goal(
-        id: (json['id'] as String?) ?? '',
-        parentGoalId: json['parent_goal_id'] as String?,
-        level: switch (json['level'] as String?) {
-          'yearly' => GoalLevel.yearly,
-          'monthly' => GoalLevel.monthly,
-          'weekly' => GoalLevel.weekly,
-          'daily' => GoalLevel.daily,
-          _ => GoalLevel.lifetime,
-        },
-        title: (json['title'] as String?) ?? '',
-        description: (json['description'] as String?) ?? '',
-        completed: (json['completed'] as bool?) ?? false,
-        dueDate: _parseDate(json['due_date']),
-        createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
-      );
+    id: (json['id'] as String?) ?? '',
+    parentGoalId: json['parent_goal_id'] as String?,
+    level: switch (json['level'] as String?) {
+      'yearly' => GoalLevel.yearly,
+      'monthly' => GoalLevel.monthly,
+      'weekly' => GoalLevel.weekly,
+      'daily' => GoalLevel.daily,
+      _ => GoalLevel.lifetime,
+    },
+    title: (json['title'] as String?) ?? '',
+    description: (json['description'] as String?) ?? '',
+    completed: (json['completed'] as bool?) ?? false,
+    dueDate: _parseDate(json['due_date']),
+    createdAt: _parseDateTime(json['created_at']) ?? DateTime.now(),
+  );
 }
-
 
 /// A community post on the Instagram-style feed. [author] carries the
 /// display/profile snapshot (joined from profiles) so a post shows who asked.
@@ -606,8 +615,8 @@ class Post {
     final p = json['author'] is Map<String, dynamic>
         ? json['author'] as Map<String, dynamic>
         : json['profiles'] is Map<String, dynamic>
-            ? json['profiles'] as Map<String, dynamic>
-            : null;
+        ? json['profiles'] as Map<String, dynamic>
+        : null;
     if (p != null) {
       author = UserProfile.fromJson({
         'id': json['user_id'],
@@ -653,8 +662,8 @@ class PostAnswer {
     final p = json['author'] is Map<String, dynamic>
         ? json['author'] as Map<String, dynamic>
         : json['profiles'] is Map<String, dynamic>
-            ? json['profiles'] as Map<String, dynamic>
-            : null;
+        ? json['profiles'] as Map<String, dynamic>
+        : null;
     if (p != null) {
       author = UserProfile.fromJson({
         'id': json['user_id'],

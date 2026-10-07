@@ -1,13 +1,17 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'core/app_state.dart';
+import 'core/backdrop_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme_controller.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/root_shell.dart';
 import 'screens/splash/loading_screen.dart';
+import 'services/ambient_sound_service.dart';
 import 'services/auth_service.dart';
 import 'services/e2ee_service.dart';
 import 'services/notification_service.dart';
@@ -18,6 +22,8 @@ Future<void> main() async {
   await SupabaseService.instance.initialize();
   AppState.instance.bindAuth(SupabaseService.instance.client);
   await ThemeController.instance.load();
+  await BackdropController.instance.load();
+  await AmbientSoundService.instance.load();
   await NotificationService.instance.load();
   try {
     await NotificationService.instance.restoreAll();
@@ -26,6 +32,13 @@ Future<void> main() async {
   }
 
   runApp(const OnePercentBetterApp());
+
+  // Resume the user's theme soundscape (only if they opted in).
+  if (AmbientSoundService.instance.enabled) {
+    unawaited(
+      AmbientSoundService.instance.sync(BackdropController.instance.scene),
+    );
+  }
 }
 
 class OnePercentBetterApp extends StatefulWidget {
@@ -115,9 +128,7 @@ class SuspendedScreen extends StatelessWidget {
     final uri = Uri(
       scheme: 'mailto',
       path: _supportEmail,
-      queryParameters: {
-        'subject': 'Account suspension appeal',
-      },
+      queryParameters: {'subject': 'Account suspension appeal'},
     );
     final launched = await launchUrl(uri);
     if (!launched && context.mounted) {
@@ -142,16 +153,18 @@ class SuspendedScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text(
                   'Account suspended',
-                  style: theme.textTheme.headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
                   'This account has been suspended by the administrators. '
                   'If you believe this is a mistake, please contact support.',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
