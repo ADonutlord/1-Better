@@ -71,21 +71,12 @@ class _Brand extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Container(
-          width: 72,
-          height: 72,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: const Text('🌱', style: TextStyle(fontSize: 38)),
+        Image.asset(
+          'assets/logo_full.png',
+          width: 220,
+          fit: BoxFit.contain,
         ),
         const SizedBox(height: 12),
-        Text('1% Better',
-            style: theme.textTheme.headlineMedium
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 4),
         Text(
           'Talk. Act. Improve.',
           style: theme.textTheme.bodyLarge

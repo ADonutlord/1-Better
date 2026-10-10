@@ -4,6 +4,7 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -53,6 +54,29 @@ static void my_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+
+  // Set the window icon. The build copies my_icon.png next to the binary, and
+  // in installed layouts the bundled logo in flutter_assets is used as a
+  // fallback.
+  g_autofree gchar* exe_path = g_file_read_link("/proc/self/exe", nullptr);
+  g_autofree gchar* exe_dir =
+      exe_path != nullptr ? g_path_get_dirname(exe_path) : g_strdup(".");
+  const gchar* const kIconCandidates[] = {
+      "my_icon.png",
+      "data/my_icon.png",
+      "data/flutter_assets/assets/logo.png",
+  };
+  g_autoptr(GdkPixbuf) icon = nullptr;
+  for (gsize i = 0; i < G_N_ELEMENTS(kIconCandidates) && icon == nullptr; i++) {
+    g_autofree gchar* icon_path =
+        g_build_filename(exe_dir, kIconCandidates[i], nullptr);
+    g_autoptr(GError) icon_error = nullptr;
+    icon = gdk_pixbuf_new_from_file(icon_path, &icon_error);
+    g_clear_error(&icon_error);
+  }
+  if (icon != nullptr) {
+    gtk_window_set_icon(window, icon);
+  }
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
